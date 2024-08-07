@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Controllers\BaseController;
+use CodeIgniter\HTTP\ResponseInterface;
+
+class UserController extends BaseController
+{
+    public function dashboard()
+    {
+        return view('user/new_dashboard_user');
+    }
+
+    public function pengajuansurat_keputusan()
+    {
+        return view('user/pengajuansurat_keputusan');
+    }
+
+    public function pengajuansurat_tugas()
+    {
+        return view('user/pengajuansurat_tugas');
+    }
+
+    public function pengajuansurat_formal()
+    {
+        return view('user/pengajuansurat_formal');
+    }
+
+    public function daftar_surat()
+    {
+        return view('user/daftar_surat');
+    }
+
+    public function detail()
+    {
+        $request = \Config\Services::request();
+        $section = $request->getVar('section');
+        $arrKeja = ["pengabdian", "pengajaran", "penelitian", "penunjang"];
+
+        if (!in_array($section, $arrKeja)) {
+            return view('not_found');
+        }
+
+        return view('user/detail', ['section' => $section]);
+    }
+}

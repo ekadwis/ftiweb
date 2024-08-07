@@ -1,0 +1,17 @@
+.container {
+    margin: auto;
+}
+form {
+    width: 50%;
+}
+
+.logo img {
+    width: 120px;
+    height: 90px;
+}
+
+@media only screen and (max-width: 728px) {
+    form {
+        width: 90%;
+    }
+  }
