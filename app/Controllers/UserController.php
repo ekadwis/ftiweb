@@ -4,9 +4,18 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\DosenModel;
 
 class UserController extends BaseController
 {
+
+    protected $DosenModel;
+
+    public function __construct()
+    {
+        $this->DosenModel = new DosenModel();
+    }
+
     public function dashboard()
     {
         return view('user/new_dashboard_user');
@@ -14,18 +23,22 @@ class UserController extends BaseController
 
     public function pengajuansurat_keputusan()
     {
-        return view('user/pengajuansurat_keputusan');
+        $data['dosen'] = $this->DosenModel->findAll();
+        return view('user/pengajuansurat_keputusan', $data);
     }
-
+    
     public function pengajuansurat_tugas()
     {
-        return view('user/pengajuansurat_tugas');
+        $data['dosen'] = $this->DosenModel->findAll();
+        return view('user/pengajuansurat_tugas', $data);
     }
-
+    
     public function pengajuansurat_formal()
     {
-        return view('user/pengajuansurat_formal');
+        $data['dosen'] = $this->DosenModel->findAll();
+        return view('user/pengajuansurat_formal', $data);
     }
+    
 
     public function daftar_surat()
     {
