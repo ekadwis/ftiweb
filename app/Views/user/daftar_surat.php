@@ -8,6 +8,7 @@
     <thead>
         <tr>
             <th>No</th>
+            <th>Kode Surat</th>
             <th>Tanggal</th>
             <th>Jenis Surat</th>
             <th>Perihal</th>
@@ -15,36 +16,36 @@
         </tr>
     </thead>
     <tbody>
-        <!-- Sample Data -->
+        <!-- Data -->
+        <?php $i = 1; ?>
+        <?php foreach($surat as $srt) : ?>
         <tr>
-            <td>Tiger Nixon</td>
-            <td>System Architect</td>
-            <td>Edinburgh</td>
-            <td>61</td>
-            <td>Download</td>
+            <td><?= $i++; ?></td>
+            <td><?= $srt['kode_surat']; ?></td>
+            <td><?= $srt['tanggal']; ?></td>
+            <td><?= $srt['jenis_surat']; ?></td>
+            <td><?= $srt['perihal']; ?></td>
+            <td class="<?php 
+                switch($srt['status']) {
+                    case 'Pending':
+                        echo 'bg-warning';
+                        break;
+                    case 'Revisi':
+                        echo 'bg-danger';
+                        break;
+                    case 'Download':
+                        echo 'bg-success';
+                        break;
+                    case 'Proses':
+                        echo 'bg-primary';
+                        break;
+                    default:
+                        echo '';
+                        break;
+                }
+            ?>"><?= $srt['status']; ?></td>
         </tr>
-        <tr>
-            <td>Garrett Winters</td>
-            <td>Accountant</td>
-            <td>Tokyo</td>
-            <td>63</td>
-            <td>Revisi</td>
-        </tr>
-        <tr>
-            <td>Tiger Nixon</td>
-            <td>System Architect</td>
-            <td>Edinburgh</td>
-            <td>61</td>
-            <td>Pending</td>
-        </tr>
-        <tr>
-            <td>Garrett Winters</td>
-            <td>Accountant</td>
-            <td>Tokyo</td>
-            <td>63</td>
-            <td>Prosss</td>
-        </tr>
-        <!-- More rows as needed -->
+        <?php endforeach; ?>
     </tbody>
 </table>
 </div>

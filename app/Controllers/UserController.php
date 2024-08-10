@@ -5,15 +5,18 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\DosenModel;
+use App\Models\SuratModel;
 
 class UserController extends BaseController
 {
 
     protected $DosenModel;
+    protected $SuratModel;
 
     public function __construct()
     {
         $this->DosenModel = new DosenModel();
+        $this->SuratModel = new SuratModel();
     }
 
     public function dashboard()
@@ -42,7 +45,8 @@ class UserController extends BaseController
 
     public function daftar_surat()
     {
-        return view('user/daftar_surat');
+        $data['surat'] = $this->SuratModel->findAll();
+        return view('user/daftar_surat', $data);
     }
 
     public function detail()

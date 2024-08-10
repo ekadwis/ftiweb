@@ -39,4 +39,22 @@ class DosenModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getNamaDosen($id_dosen)
+    {
+        return $this->where('id_dosen', $id_dosen)
+        ->findColumn('nama_dosen');
+    }
+
+    public function getNikDosen($id_dosen)
+    {
+        return $this->where('id_dosen', $id_dosen)
+        ->findColumn('nik_dosen');
+    }
+
+    public function getProdiDosen($id_dosen)
+    {
+        return $this->where('id_dosen', $id_dosen)
+        ->findColumn('prodi_dosen');
+    }
 }

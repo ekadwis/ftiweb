@@ -4,17 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class SuratModel extends Model
+class KodeSuratModel extends Model
 {
-    protected $table            = 'surat';
+    protected $table            = 'kode_surat';
     protected $primaryKey       = 'id_surat';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id_dekanat', 'id_dosen', 'tanggal', 'kode_surat', 'perihal', 'jenis_surat', 'tujuan', 'prodi', 'nama_dosen', 'nik_dosen', 'kegiatan_keperluan', 'periode_awal', 'periode_akhir', 'sifat', 'tembusan', 'catatan', 'lampiran', 'no_urut', 'status'];
+    protected $allowedFields    = ['kode_surat', 'jenis_surat', 'no_urut'];
 
-    
     protected bool $allowEmptyInserts = false;
 
     // Dates
@@ -40,4 +39,24 @@ class SuratModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getNoUrutByJenis($jenisSurat)
+    {
+         // Mengambil satu hasil sebagai integer
+         return $this->where('jenis_surat', $jenisSurat)
+         ->findColumn('no_urut')[0] ?? null; // Mengambil nilai no_urut pertama, jika ada
+    }
+
+    public function getKodeSuratByJenis($jenisSurat)
+    {
+        return $this->where('jenis_surat', $jenisSurat)
+                    ->findColumn('kode_surat');
+    }
+
+    public function update_no_urut($kode_surat, $no_urut) {
+        return $this->set('no_urut', $no_urut)
+                    ->where('kode_surat', $kode_surat)
+                    ->update();
+    }
 }
+

@@ -39,4 +39,5 @@ $routes->group('user', ['filter' => 'role:user'], function($routes) {
     $routes->get('detail', 'UserController::detail');
     $routes->get('detail', 'UserController::detail');
     $routes->post('submit_pengajuansurat_tugas', 'SuratController::submit_pengajuansurat_tugas');
+    $routes->post('submit_pengajuansurat_keputusan', 'SuratController::submit_pengajuansurat_keputusan');
 });

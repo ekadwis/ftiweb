@@ -8,11 +8,11 @@
         <h2>Pengajuan Surat Tugas</h2>
         <div class="form-group mt-4">
             <label>Tujuan</label>
-            <input class="form-control" type="text" name="tujuan">
+            <input class="form-control" type="text" name="tujuan" required>
         </div>
         <div class="form-group mt-3">
             <label>Perihal</label>
-            <select class="form-control form-control-sm" name="perihal">
+            <select class="form-control form-control-sm" name="perihal" required>
                 <option value="Pengajaran" selected>Pengajaran</option>
                 <option value="Pengabdian">Pengabdian</option>
                 <option value="Pengabdian (Publikasi) Tingkat Internal">Pengabdian (Publikasi) Tingkat Internal</option>
@@ -34,38 +34,38 @@
         </div>
         <div class="form-group mt-3">
             <label>Kegiatan</label>
-            <input class="form-control" type="text" name="kegiatan_keperluan">
+            <input class="form-control" type="text" name="kegiatan_keperluan" required>
         </div>
         <div class="form-group mt-3">
             <label>Periode</label>
             <div class="row">
                 <div class="col">
-                    <input type="date" class="form-control" name="periode_awal">
+                    <input type="date" class="form-control" name="periode_awal" required>
                 </div>
                 <div class="col">
-                    <input type="date" class="form-control" name="periode_akhir">
+                    <input type="date" class="form-control" name="periode_akhir" required>
                 </div>
             </div>
         </div>
         <div class="form-group mt-3">
             <label>Sifat</label>
-            <select class="form-control form-control-sm" name="sifat">
+            <select class="form-control form-control-sm" name="sifat" required>
                 <option value="Urgent" selected>Urgent</option>
                 <option value="Not Urgent">Not Urgent</option>
             </select>
         </div>
         <div class="form-group mt-3">
             <label for="tembusanTextArea" class="form-label">Tembusan</label>
-            <textarea class="form-control" id="tembusanTextArea" rows="3" name="tembusan"></textarea>
+            <textarea class="form-control" id="tembusanTextArea" rows="3" name="tembusan" required></textarea>
         </div>
         <div class="form-group mt-3">
             <label for="catatanTextArea" class="form-label">Catatan</label>
-            <textarea class="form-control" id="catatanTextArea" rows="3" name="catatan"></textarea>
+            <textarea class="form-control" id="catatanTextArea" rows="3" name="catatan" required></textarea>
         </div>
-        <!-- <div class="form-group my-3">
+        <div class="form-group my-3">
             <label for="formFile" class="form-label">Unggah Lampiran</label>
-            <input class="form-control" type="file" id="formFile" name="lampiran">
-        </div> -->
+            <input class="form-control" type="file" id="formFile" name="lampiran" required>
+        </div>
 
         <button type="submit" class="btn btn-secondary">Submit</button>
     </form>
