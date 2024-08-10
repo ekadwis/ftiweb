@@ -7,33 +7,43 @@
 <table id="example" class="display" style="width:100%;">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Office</th>
-            <th>Age</th>
-            <th>Start date</th>
-            <th>Salary</th>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Jabatan</th>
+            <th>Tujuan</th>
+            <th>Perihal</th>
+            <th>Sifat</th>
+            <th>File</th>
+            <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
-        <!-- Sample Data -->
-        <tr>
-            <td>Tiger Nixon</td>
-            <td>System Architect</td>
-            <td>Edinburgh</td>
-            <td>61</td>
-            <td>2011/04/25</td>
-            <td>$320,800</td>
-        </tr>
-        <tr>
-            <td>Garrett Winters</td>
-            <td>Accountant</td>
-            <td>Tokyo</td>
-            <td>63</td>
-            <td>2011/07/25</td>
-            <td>$170,750</td>
-        </tr>
-        <!-- More rows as needed -->
+        <!-- Data -->
+        <?php $i = 1; ?>
+        <?php foreach ($surat as $srt) : ?>
+            <tr>
+                <td><?= $i++; ?></td>
+                <td><?= $srt['tanggal']; ?></td>
+                <td>Dekanat</td>
+                <td><?= $srt['tujuan']; ?></td>
+                <td><?= $srt['perihal']; ?></td>
+                <td class="<?php 
+                switch($srt['sifat']) {
+                    case 'Urgent':
+                        echo 'bg-danger';
+                        break;
+                    case 'Not Urgent':
+                        echo 'bg-success';
+                        break;
+                    default:
+                        echo '';
+                        break;
+                }
+            ?>"><?= $srt['sifat']; ?></td>
+                <td><a href="<?= site_url('admin/download/' . $srt['lampiran']); ?>" class="btn btn-warning"><box-icon type='solid' name='cloud-download'></box-icon></a></td>
+                <td><box-icon name='detail'></box-icon><box-icon name='check'></box-icon><box-icon name='x'></box-icon></td>
+            </tr>
+        <?php endforeach; ?>
     </tbody>
 </table>
 </div>

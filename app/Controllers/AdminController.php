@@ -6,17 +6,20 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ProfileModel;
 use App\Models\DataPenggunaModel;
+use App\Models\SuratModel;
 
 class AdminController extends BaseController
 {
 
     protected $ProfileModel;
     protected $DataPenggunaModel;
+    protected $SuratModel;
 
     public function __construct()
     {
         $this->ProfileModel = new ProfileModel();
         $this->DataPenggunaModel = new DataPenggunaModel();
+        $this->SuratModel = new SuratModel();
     }
 
     public function index()
@@ -26,7 +29,8 @@ class AdminController extends BaseController
 
     public function pengajuanSurat()
     {
-        return view('admin/data_pengajuan_surat_dekanat');
+        $data['surat'] = $this->SuratModel->findAll();
+        return view('admin/data_pengajuan_surat_dekanat', $data);
     }
 
     public function permohonanttd()
@@ -80,6 +84,7 @@ class AdminController extends BaseController
 
     public function ubahprofile()
     {
+        // ambil data profile dan simpan di $data
         $data = [
             'id' => $this->request->getVar('id'),
             'nama_user' => $this->request->getVar('nama_user'),
@@ -99,4 +104,17 @@ class AdminController extends BaseController
         $this->ProfileModel->delete($user_id);
         return redirect()->to('/admin/daftarpengguna_dekanat');
     }
+
+    public function downloadFile($fileName)
+{
+    $path = WRITEPATH . 'uploads/lampiran_files/' . $fileName;
+
+    // Cek apakah file ada
+    if (file_exists($path)) {
+        return $this->response->download($path, null)->setFileName($fileName);
+    } else {
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("File tidak ditemukan.");
+    }
+}
+
 }

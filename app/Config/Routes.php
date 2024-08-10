@@ -28,6 +28,7 @@ $routes->group('admin', ['filter' => 'role:administrator'], function($routes) {
     $routes->get('suratkeputusan', 'AdminController::suratkeputusan');
     $routes->get('profiladministrator', 'AdminController::profiladministrator');
     $routes->get('deleteuser/(:any)', 'AdminController::deleteuser/$1');
+    $routes->get('download/(:segment)', 'AdminController::downloadFile/$1');
 });
 
 // Users 
