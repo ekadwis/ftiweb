@@ -7,33 +7,25 @@
 <table id="example" class="display" style="width:100%;">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Office</th>
-            <th>Age</th>
-            <th>Start date</th>
-            <th>Salary</th>
+            <th>No</th>
+            <th>Nama</th>
+            <th>NIK</th>
+            <th>Jabatan</th>
+            <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
-        <!-- Sample Data -->
+       <!-- Data  -->
+       <?php $i = 1; ?>
+        <?php foreach ($users as $user) : ?>
         <tr>
-            <td>Tiger Nixon</td>
-            <td>System Architect</td>
-            <td>Edinburgh</td>
-            <td>61</td>
-            <td>2011/04/25</td>
-            <td>$320,800</td>
+            <td><?= $i++; ?></td>
+            <td><?= $user['nama_user']; ?></td>
+            <td><?= $user['nik_user']; ?></td>
+            <td>Dekanat</td>
+            <td><a href="<?= base_url(); ?>admin/deleteuser/<?= $user['user_id']; ?>"><box-icon type='solid' name='trash-alt'></box-icon></a></td>
         </tr>
-        <tr>
-            <td>Garrett Winters</td>
-            <td>Accountant</td>
-            <td>Tokyo</td>
-            <td>63</td>
-            <td>2011/07/25</td>
-            <td>$170,750</td>
-        </tr>
-        <!-- More rows as needed -->
+       <?php endforeach; ?>
     </tbody>
 </table>
 </div>

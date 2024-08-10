@@ -5,15 +5,18 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ProfileModel;
+use App\Models\DataPenggunaModel;
 
 class AdminController extends BaseController
 {
 
     protected $ProfileModel;
+    protected $DataPenggunaModel;
 
     public function __construct()
     {
         $this->ProfileModel = new ProfileModel();
+        $this->DataPenggunaModel = new DataPenggunaModel();
     }
 
     public function index()
@@ -38,7 +41,8 @@ class AdminController extends BaseController
 
     public function daftarpengguna_dekanat()
     {
-        return view('admin/daftarpengguna_dekanat');
+        $data['users'] = $this->DataPenggunaModel->findAll();
+        return view('admin/daftarpengguna_dekanat', $data);
     }
     public function daftarpengguna_dosen()
     {
@@ -88,5 +92,11 @@ class AdminController extends BaseController
 
         return redirect()->to('/admin/profiladministrator');
 
+    }
+
+    public function deleteuser($user_id)
+    {
+        $this->ProfileModel->delete($user_id);
+        return redirect()->to('/admin/daftarpengguna_dekanat');
     }
 }
