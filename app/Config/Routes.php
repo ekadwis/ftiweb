@@ -36,8 +36,11 @@ $routes->group('user', ['filter' => 'role:user'], function($routes) {
     $routes->get('pengajuansurat_tugas', 'UserController::pengajuansurat_tugas');
     $routes->get('pengajuansurat_formal', 'UserController::pengajuansurat_formal');
     $routes->get('daftarsurat', 'UserController::daftar_surat');
+    $routes->get('daftardosen', 'UserController::daftar_dosen');
     $routes->get('detail', 'UserController::detail');
     $routes->get('detail', 'UserController::detail');
+    $routes->post('tambahdosen', 'UserController::tambahdosen');
     $routes->post('submit_pengajuansurat_tugas', 'SuratController::submit_pengajuansurat_tugas');
     $routes->post('submit_pengajuansurat_keputusan', 'SuratController::submit_pengajuansurat_keputusan');
+    $routes->post('submit_pengajuansurat_formal', 'SuratController::submit_pengajuansurat_formal');
 });

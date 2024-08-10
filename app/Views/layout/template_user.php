@@ -63,6 +63,12 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
+                        <a href="<?= base_url(); ?>user/daftardosen" class="sidebar-link">
+                            <i class="fa-solid fa-house"></i>
+                            Daftar Dosen
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
                         <a href="<?= base_url('logout'); ?>" class="sidebar-link">
                             <i class="fa-solid fa-house"></i>
                             Logout
