@@ -28,7 +28,14 @@ $routes->group('admin', ['filter' => 'role:administrator'], function($routes) {
     $routes->get('suratkeputusan', 'AdminController::suratkeputusan');
     $routes->get('profiladministrator', 'AdminController::profiladministrator');
     $routes->get('deleteuser/(:any)', 'AdminController::deleteuser/$1');
+    $routes->get('detail_pengajuan_surat/(:any)', 'AdminController::detail_pengajuan_surat/$1');
+    $routes->get('approved_pengajuan_surat/(:any)', 'AdminController::approved_pengajuan_surat/$1');
+    $routes->get('revisi_pengajuan_surat/(:any)', 'AdminController::revisi_pengajuan_surat/$1');
+    $routes->get('detail_permohonan_ttd/(:any)', 'AdminController::detail_permohonan_ttd/$1');
+    $routes->post('edit_permohonan_ttd', 'AdminController::edit_permohonan_ttd');
+    $routes->get('approved_permohonan_ttd/(:any)', 'AdminController::approved_permohonan_ttd/$1');
     $routes->get('download/(:segment)', 'AdminController::downloadFile/$1');
+    $routes->post('submit_revisi_pengajuan_surat', 'AdminController::submit_revisi_pengajuan_surat');
 });
 
 // Users 

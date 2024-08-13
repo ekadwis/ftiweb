@@ -7,33 +7,35 @@
 <table id="example" class="display" style="width:100%;">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Office</th>
-            <th>Age</th>
-            <th>Start date</th>
-            <th>Salary</th>
+            <th>No</th>
+            <th>Jenis Surat</th>
+            <th>Kode Surat</th>
+            <th>Perihal</th>
+            <th>Kegiatan</th>
+            <th>Nik</th>
+            <th>Prodi</th>
+            <th>Periode</th>
+            <th>Pembuat</th>
+            <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
-        <!-- Sample Data -->
+       <!-- Data -->
+       <?php $i = 1; ?>
+        <?php foreach ($surat as $srt) : ?>
         <tr>
-            <td>Tiger Nixon</td>
-            <td>System Architect</td>
-            <td>Edinburgh</td>
-            <td>61</td>
-            <td>2011/04/25</td>
-            <td>$320,800</td>
+            <td><?= $i++; ?></td>
+            <td><?= $srt['jenis_surat']; ?></td>
+            <td><?= $srt['kode_surat']; ?></td>
+            <td><?= $srt['perihal']; ?></td>
+            <td><?= $srt['kegiatan_keperluan']; ?></td>
+            <td><?= $srt['nik_dosen']; ?></td>
+            <td><?= $srt['prodi']; ?></td>
+            <td><?= $srt['periode_awal']; ?> s.d <?= $srt['periode_akhir']; ?></td>
+            <td><?= $srt['author']; ?></td>
+            <td>Aksi</td>
         </tr>
-        <tr>
-            <td>Garrett Winters</td>
-            <td>Accountant</td>
-            <td>Tokyo</td>
-            <td>63</td>
-            <td>2011/07/25</td>
-            <td>$170,750</td>
-        </tr>
-        <!-- More rows as needed -->
+        <?php endforeach; ?>
     </tbody>
 </table>
 </div>

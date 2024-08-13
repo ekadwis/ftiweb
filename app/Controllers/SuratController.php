@@ -45,6 +45,13 @@ class SuratController extends BaseController
             $lampiran_path = $newFileName;
         }
 
+        $jenis_surat = 'Surat Tugas';
+        $no_urut = $this->KodeSuratModel->getNoUrutByJenis($jenis_surat);
+
+        $new_no_urut = $no_urut + 1;
+        $formatted_no_urut = str_pad($new_no_urut, 3, '0', STR_PAD_LEFT);
+
+        $kode_surat = $this->KodeSuratModel->getKodeSuratByJenis($jenis_surat);
         for ($i = 1; $i <= 10; $i++) {
             $id_dosen = $this->request->getVar('dosen' . $i);
 
@@ -52,14 +59,6 @@ class SuratController extends BaseController
             if (empty($id_dosen)) {
                 continue;
             }
-
-            $jenis_surat = 'Surat Tugas';
-            $no_urut = $this->KodeSuratModel->getNoUrutByJenis($jenis_surat);
-
-            $new_no_urut = $no_urut + 1;
-            $formatted_no_urut = str_pad($new_no_urut, 3, '0', STR_PAD_LEFT);
-
-            $kode_surat = $this->KodeSuratModel->getKodeSuratByJenis($jenis_surat);
 
             // Mendapatkan data dosen dari database
             $nik_dosen = $this->DosenModel->getNikDosen($id_dosen);
@@ -214,12 +213,15 @@ class SuratController extends BaseController
         }
 
         $id_dosen = $this->request->getVar('dosen');
-        // Lewati iterasi jika $id_dosen kosong
-        if (empty($id_dosen)) {
-            return redirect()->to('/user/pengajuansurat_formal');
-        }
+
 
         $jenis_surat = 'Surat Formal';
+        $no_urut = $this->KodeSuratModel->getNoUrutByJenis($jenis_surat);
+        
+        $new_no_urut = $no_urut + 1;
+        $formatted_no_urut = str_pad($new_no_urut, 3, '0', STR_PAD_LEFT);
+
+        $kode_surat = $this->KodeSuratModel->getKodeSuratByJenis($jenis_surat);
 
         // Mendapatkan data dosen dari database
         $nik_dosen = $this->DosenModel->getNikDosen($id_dosen);
@@ -233,7 +235,7 @@ class SuratController extends BaseController
                 'id_dekanat' => user()->id,
                 'id_dosen' => $id_dosen,
                 'tanggal' => date('d-m-Y'),
-                'kode_surat' => 0,
+                'kode_surat' => $kode_surat[0] . "/" . $formatted_no_urut,
                 'perihal' => $this->request->getVar('perihal'),
                 'jenis_surat' => $jenis_surat,
                 'tujuan' => $this->request->getVar('tujuan'),
@@ -247,10 +249,12 @@ class SuratController extends BaseController
                 'tembusan' => $this->request->getVar('tembusan'),
                 'catatan' => "",
                 'lampiran' => $lampiran_path,
-                'no_urut' => 0,
+                'no_urut' => $new_no_urut,
                 'status' => "Pending",
             ];
 
+            // Update no_urut di table kode_surat
+            $this->KodeSuratModel->update_no_urut($kode_surat, $new_no_urut);
             // Insert pengajuan ke table surat
             $this->SuratModel->insert($data);
         } else {

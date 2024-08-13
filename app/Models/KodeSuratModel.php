@@ -58,5 +58,6 @@ class KodeSuratModel extends Model
                     ->where('kode_surat', $kode_surat)
                     ->update();
     }
+    
 }
 

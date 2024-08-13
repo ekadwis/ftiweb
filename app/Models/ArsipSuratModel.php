@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ProfileModel extends Model
+class ArsipSuratModel extends Model
 {
-    protected $table            = 'users';
-    protected $primaryKey       = 'id';
+    protected $table            = 'arsip_surat';
+    protected $primaryKey       = 'id_arsip';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['email', 'jeniskelamin_user', 'nama_user', 'telp_user'];
+    protected $allowedFields    = ['id_permohonan', 'id_surat', 'id_dekanat', 'id_dosen', 'tanggal', 'kode_surat', 'perihal', 'jenis_surat', 'tujuan', 'prodi', 'nama_dosen', 'nik_dosen', 'kegiatan_keperluan', 'periode_awal', 'periode_akhir', 'sifat', 'tembusan', 'catatan', 'lampiran', 'no_urut', 'status'];
 
     protected bool $allowEmptyInserts = false;
 
@@ -39,10 +39,4 @@ class ProfileModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
-    public function getNamaUser($id)
-    {
-        return $this->where('id', $id)
-                    ->findColumn('nama_user');
-    }
 }

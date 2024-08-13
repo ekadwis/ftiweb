@@ -21,7 +21,7 @@
         <!-- Data -->
         <?php $i = 1; ?>
         <?php foreach ($surat as $srt) : ?>
-            <tr>
+            <tr class="fs-6">
                 <td><?= $i++; ?></td>
                 <td><?= $srt['tanggal']; ?></td>
                 <td>Dekanat</td>
@@ -41,7 +41,10 @@
                 }
             ?>"><?= $srt['sifat']; ?></td>
                 <td><a href="<?= site_url('admin/download/' . $srt['lampiran']); ?>" class="btn btn-warning"><box-icon type='solid' name='cloud-download'></box-icon></a></td>
-                <td><box-icon name='detail'></box-icon><box-icon name='check'></box-icon><box-icon name='x'></box-icon></td>
+                <td style="width: 100px;">
+                <a href="<?= base_url(); ?>admin/detail_pengajuan_surat/<?= $srt['id_surat']; ?>"><box-icon name='detail'></box-icon></a>
+                <a href="<?= base_url(); ?>admin/approved_pengajuan_surat/<?= $srt['id_surat']; ?>"><box-icon name='check'></box-icon></a>
+                <a href="<?= base_url(); ?>admin/revisi_pengajuan_surat/<?= $srt['id_surat']; ?>"><box-icon name='x'></box-icon></a></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
