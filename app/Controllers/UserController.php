@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\ArsipSuratModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\DosenModel;
 use App\Models\SuratModel;
@@ -12,16 +13,20 @@ class UserController extends BaseController
 
     protected $DosenModel;
     protected $SuratModel;
+    protected $ArsipModel;
 
     public function __construct()
     {
         $this->DosenModel = new DosenModel();
         $this->SuratModel = new SuratModel();
+        $this->ArsipModel = new ArsipSuratModel();
     }
 
     public function dashboard()
     {
-        return view('user/new_dashboard_user');
+        $data['surat_terbanyak'] = $this->ArsipModel->getSuratDosen('most');
+        $data['surat_tersedikit'] = $this->ArsipModel->getSuratDosen('less');
+        return view('user/new_dashboard_user', $data);
     }
 
     public function pengajuansurat_keputusan()

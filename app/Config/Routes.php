@@ -8,9 +8,6 @@ use CodeIgniter\Router\RouteCollection;
 
 // Auth
 
-// $routes->get('/login', 'AuthController::login');
-// $routes->get('/register', 'AuthController::register');
-
 // Administrator
 $routes->get('/', 'AdminController::index', ['filter' => 'role:administrator']);
 $routes->post('/ubahprofile', 'AdminController::ubahprofile');
