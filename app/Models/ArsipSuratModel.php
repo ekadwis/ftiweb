@@ -39,4 +39,41 @@ class ArsipSuratModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+
+    public function getSuratDosen($params)
+    {
+        // Ambil NIK dari user yang sedang login
+        $nikUser = user()->nik_user;
+
+        // Tentukan arah pengurutan berdasarkan parameter
+        $order = ($params === 'most') ? 'DESC' : 'ASC';
+
+        // Query untuk mendapatkan data dosen dengan pengurutan surat sesuai parameter
+        $query = $this->select('dosen.nama_dosen, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat')
+            ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
+            ->groupBy('dosen.nama_dosen, dosen.nik_dosen')
+            ->orderBy('jumlah_surat', $order)
+            ->limit(5);
+
+        // Jika NIK user ada, tambahkan kondisi untuk mengecualikan data yang cocok
+        if ($nikUser) {
+            $query->where('dosen.nik_dosen !=', $nikUser);
+        }
+
+        // Eksekusi query dan ambil hasilnya
+        $result = $query->findAll();
+
+        // Jika tidak ada hasil, ulangi query tanpa kondisi where
+        if (empty($result)) {
+            $result = $this->select('dosen.nama_dosen, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat')
+                ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
+                ->groupBy('dosen.nama_dosen, dosen.nik_dosen')
+                ->orderBy('jumlah_surat', $order)
+                ->limit(5)
+                ->findAll();
+        }
+
+        return $result;
+    }
 }

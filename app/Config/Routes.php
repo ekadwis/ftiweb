@@ -6,6 +6,10 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
+// Auth
+
+// $routes->get('/login', 'AuthController::login');
+// $routes->get('/register', 'AuthController::register');
 
 // Administrator
 $routes->get('/', 'AdminController::index', ['filter' => 'role:administrator']);

@@ -13,7 +13,6 @@
                     <option value="3">Three</option>
                 </select>
             </div>
-
         </div>
         <div class="d-flex align-items-center gap-2">
             <div class="fs-5 fw-bold">Tahun:</div>
@@ -101,13 +100,17 @@
                 <div id="bar-container-2"></div>
             </figure>
         </div>
-
     </div>
 </div>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
 <script>
+    var mostSurat = <?= json_encode($surat_terbanyak) ?>;
+    var lessSurat = <?= json_encode($surat_tersedikit) ?>;
+
+
     // Line Chart
     Highcharts.chart('container', {
 
@@ -202,7 +205,6 @@
         }
 
     });
-
     // Most Lecture
     Highcharts.chart('bar-container', {
         chart: {
@@ -212,9 +214,9 @@
             text: 'Dosen Dengan Kegiatan Terbanyak'
         },
         xAxis: {
-            categories: [
-                'Junaidi', 'Saiful', 'Alpa', 'Manu', 'Daya'
-            ],
+            categories: mostSurat.map((v, i) => {
+                return v.nama_dosen
+            }),
             plotLines: [{
                 color: '#000000',
                 width: 1,
@@ -222,6 +224,7 @@
             }]
         },
         yAxis: {
+            allowDecimals: false,
             min: 0,
             title: {
                 text: ''
@@ -245,7 +248,9 @@
         },
         series: [{
             name: 'Kegiatan',
-            data: [42, 27, 22, 21, 19],
+            data: mostSurat.map((v, i) => {
+                return parseInt(v.jumlah_surat)
+            }),
         }]
     });
     Highcharts.chart('bar-container-2', {
@@ -256,9 +261,9 @@
             text: 'Dosen Dengan Kegiatan Sedikit'
         },
         xAxis: {
-            categories: [
-                'Junaidi', 'Saiful', 'Alpa', 'Manu', 'Daya'
-            ],
+            categories: lessSurat.map((v, i) => {
+                return v.nama_dosen
+            }),
             plotLines: [{
                 color: '#000000',
                 width: 1,
@@ -266,6 +271,7 @@
             }]
         },
         yAxis: {
+            allowDecimals: false,
             min: 0,
             title: {
                 text: ''
@@ -289,27 +295,12 @@
         },
         series: [{
             name: 'Kegiatan',
-            data: [{
-                    y: 19,
-                    color: '#d62728'
-                },
-                {
-                    y: 21,
-                    color: '#d62728'
-                },
-                {
-                    y: 24,
-                    color: '#d62728'
-                },
-                {
-                    y: 27,
-                    color: '#d62728'
-                },
-                {
-                    y: 47,
+            data: lessSurat.map((v, i) => {
+                return {
+                    y: parseInt(v.jumlah_surat),
                     color: '#d62728'
                 }
-            ]
+            }),
         }]
     });
 </script>

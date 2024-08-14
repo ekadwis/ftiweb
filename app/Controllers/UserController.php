@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\ArsipSuratModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\DosenModel;
 use App\Models\SuratModel;
