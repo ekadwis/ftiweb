@@ -7,113 +7,143 @@
             <div class="fs-5 fw-bold">Program Studi</div>
             <div>
                 <select class="form-select form-select-sm" aria-label="Default select example">
-                    <option selected>Sistem Informasi</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <?php foreach ($prodi as $index => $data): ?>
+                        <option value="<?= $index; ?>" <?= $index == 0 ? 'selected' : ''; ?>><?= $data; ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
             <div class="fs-5 fw-bold">Tahun:</div>
             <div>
-                <select class="form-select form-select-sm" aria-label="Default select example">
-                    <option selected>2020</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </select>
+                <select id="selectStartYear" class="form-select form-select-sm" aria-label="Default select example"></select>
             </div>
             <div>s/d</div>
             <div>
-                <select class="form-select form-select-sm" aria-label="Default select example">
-                    <option selected>2024</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </select>
+                <select id="selectEndYear" class="form-select form-select-sm" aria-label="Default select example"></select>
             </div>
         </div>
     </div>
+    <div class="row row-cols-4 my-4 gap-3">
+        <?php foreach ($perihal_dosen as $data): ?>
+            <div class="card col">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class=""><?= $data['perihal']; ?></div>
+                        <a href="/user/detail?section=<?= $data['perihal']; ?>" type="button" class="btn btn-dark btn-sm">Detail</a>
+                    </div>
+                    <div class="text-center">
+                        <p class="card-text fs-3 fw-bold"><?= $data['jumlah_perihal']; ?></p>
+                        <p class="card-text fw-normal fs-5"><?= $data['jumlah_dosen']; ?> Dosen</p>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <!-- Line Chart -->
+    <figure class="highcharts-figure">
+        <div id="container"></div>
+    </figure>
 
-    <div class="row my-4 gap-4">
-        <div class="card col">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="fs-5">Pengajaran</div>
-                    <a href="/user/detail?section=pengajaran" type="button" class="btn btn-dark btn-sm">Detail</a>
-                </div>
-                <div class="text-center">
-                    <p class="card-text fs-3 fw-bold">25</p>
-                    <p class="card-text fw-normal fs-5">30 Dosen</p>
-                </div>
-            </div>
-        </div>
-        <div class="card col">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="fs-5">Pengabdian</div>
-                    <a href="/user/detail?section=pengabdian" type="button" class="btn btn-dark btn-sm">Detail</a>
-                </div>
-                <div class="text-center">
-                    <p class="card-text fs-3 fw-bold">25</p>
-                    <p class="card-text fw-normal fs-5">30 Dosen</p>
-                </div>
-            </div>
-        </div>
-        <div class="card col">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="fs-5">Penelitian</div>
-                    <a href="/user/detail?section=penelitian" type="button" class="btn btn-dark btn-sm">Detail</a>
-                </div>
-                <div class="text-center">
-                    <p class="card-text fs-3 fw-bold">25</p>
-                    <p class="card-text fw-normal fs-5">30 Dosen</p>
-                </div>
-            </div>
-        </div>
-        <div class="card col">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="fs-5">Penunjang</div>
-                    <a href="/user/detail?section=penunjang" type="button" class="btn btn-dark btn-sm">Detail</a>
-                </div>
-                <div class="text-center">
-                    <p class="card-text fs-3 fw-bold">25</p>
-                    <p class="card-text fw-normal fs-5">30 Dosen</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Line Chart -->
+    <div class="d-flex justify-content-between">
+        <!-- Bar Chart Most Lecture -->
         <figure class="highcharts-figure">
-            <div id="container"></div>
+            <div id="bar-container"></div>
         </figure>
-
-        <div class="d-flex justify-content-between">
-            <!-- Bar Chart Most Lecture -->
-            <figure class="highcharts-figure">
-                <div id="bar-container"></div>
-            </figure>
-            <figure class="highcharts-figure">
-                <div id="bar-container-2"></div>
-            </figure>
-        </div>
+        <figure class="highcharts-figure">
+            <div id="bar-container-2"></div>
+        </figure>
     </div>
 </div>
-
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script>
+    const currentYear = new Date().getFullYear();
+    const startYear = 2020;
+
+    // Populate both selects (2020 to current year)
+    const selectStartYear = document.getElementById("selectStartYear");
+    const selectEndYear = document.getElementById("selectEndYear");
+
+    for (let year = startYear; year <= currentYear; year++) {
+        // Start Year Options
+        const optionStart = document.createElement("option");
+        optionStart.value = year;
+        optionStart.textContent = year;
+        selectStartYear.appendChild(optionStart);
+
+        // End Year Options
+        const optionEnd = document.createElement("option");
+        optionEnd.value = year;
+        optionEnd.textContent = year;
+        selectEndYear.appendChild(optionEnd);
+    }
+
+    // Set default selected values
+    selectStartYear.value = startYear;
+    selectEndYear.value = currentYear;
+</script>
 
 <script>
     var mostSurat = <?= json_encode($surat_terbanyak) ?>;
     var lessSurat = <?= json_encode($surat_tersedikit) ?>;
 
+    var data = <?= json_encode($perihal_dosen) ?>;
 
-    // Line Chart
+    // Fungsi untuk membuat kategori berdasarkan tahun saat ini
+    function createCategories() {
+        const currentYear = new Date().getFullYear();
+        const startYear = currentYear - 2; // Dua tahun sebelum tahun sekarang
+        const categories = [];
+
+        for (let year = startYear; year <= currentYear; year++) {
+            categories.push(`${year}/${year + 1} <br> Gasal`);
+            categories.push(`${year}/${year + 1} <br> Genap`);
+        }
+
+        return categories;
+    }
+
+    // Buat kategori dinamis
+    const categories = createCategories();
+
+    // Menyiapkan object untuk series data
+    const seriesData = {};
+
+    data.forEach(item => {
+        const periodeAwalBulan = new Date(item.periode_awal).getMonth() + 1; // Bulan dari 1 - 12
+        const periodeAkhirBulan = new Date(item.periode_akhir).getMonth() + 1;
+        const periodeTahun = new Date(item.periode_awal).getFullYear();
+
+        let category;
+
+        // Tentukan kategori berdasarkan bulan (Gasal atau Genap)
+        if (periodeAwalBulan <= 6 && periodeAkhirBulan <= 6) {
+            category = `${periodeTahun - 1}/${periodeTahun} <br> Gasal`;
+        } else {
+            category = `${periodeTahun - 1}/${periodeTahun} <br> Genap`;
+        }
+
+        // Jika series dengan nama perihal belum ada, buat baru
+        if (!seriesData[item.perihal]) {
+            seriesData[item.perihal] = Array(categories.length).fill(0);
+        }
+
+        // Temukan index kategori di categories dan tambahkan jumlah_perihal ke series
+        const categoryIndex = categories.indexOf(category);
+        if (categoryIndex !== -1) {
+            seriesData[item.perihal][categoryIndex] += parseInt(item.jumlah_perihal);
+        }
+    });
+
+    // Konversi seriesData menjadi array untuk highcharts
+    const series = Object.keys(seriesData).map(key => ({
+        name: key,
+        data: seriesData[key]
+    }));
+
+    // Konfigurasi Highcharts
     Highcharts.chart('container', {
-
         title: {
             text: 'Jenis - Jenis Beban Kerja Dosen Berdasarkan Periode',
             align: 'left'
@@ -126,21 +156,16 @@
         },
 
         xAxis: {
-            categories: [
-                '2020/2021 <br> Gasal', '2020/2021 <br> Genap',
-                '2021/2022 <br> Gasal', '2021/2022 <br> Genap',
-                '2022/2023 <br> Gasal', '2022/2023 <br> Genap',
-                '2023/2024 <br> Gasal', '2023/2024 <br> Genap'
-            ],
+            categories: categories,
             labels: {
                 useHTML: true,
                 style: {
-                    fontWeight: 'bold', // Membuat teks bold
-                    textAlign: 'center' // Memusatkan teks
+                    fontWeight: 'bold',
+                    textAlign: 'center'
                 }
             },
             accessibility: {
-                rangeDescription: 'Range: 2020/2021 Gasal to 2023/2024 Genap'
+                rangeDescription: `Range: ${categories[0]} to ${categories[categories.length - 1]}`
             }
         },
 
@@ -163,31 +188,7 @@
             }
         },
 
-        series: [{
-                name: 'Pengajaran',
-                data: [
-                    21, 22, 24, 25, 21, 24, 24, 25
-                ]
-            },
-            {
-                name: 'Pengabdian',
-                data: [
-                    20, 25, 22, 21, 24, 22, 25, 22
-                ]
-            },
-            {
-                name: 'Penelitian',
-                data: [
-                    12, 14, 11, 14, 24, 12, 21, 14
-                ]
-            },
-            {
-                name: 'Penunjang',
-                data: [
-                    24, 22, 21, 42, 12, 43, 31, 32
-                ]
-            }
-        ],
+        series: series,
 
         responsive: {
             rules: [{
@@ -203,7 +204,6 @@
                 }
             }]
         }
-
     });
     // Most Lecture
     Highcharts.chart('bar-container', {

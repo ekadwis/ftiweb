@@ -50,7 +50,6 @@ $routes->group('user', ['filter' => 'role:user'], function($routes) {
     $routes->get('daftarsurat', 'UserController::daftar_surat');
     $routes->get('daftardosen', 'UserController::daftar_dosen');
     $routes->get('detail', 'UserController::detail');
-    $routes->get('detail', 'UserController::detail');
     $routes->get('revisi/(:any)', 'UserController::revisi/$1');
     $routes->post('tambahdosen', 'UserController::tambahdosen');
     $routes->post('submit_pengajuansurat_tugas', 'SuratController::submit_pengajuansurat_tugas');

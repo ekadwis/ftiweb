@@ -15,12 +15,14 @@ class UserController extends BaseController
     protected $DosenModel;
     protected $SuratModel;
     protected $MergedSurat;
+    protected $ArsipModel;
 
     public function __construct()
     {
         $this->DosenModel = new DosenModel();
         $this->SuratModel = new SuratModel();
         $this->MergedSurat = new MergedSurat();
+        $this->ArsipModel = new ArsipSuratModel();
     }
 
     public function dashboard()
@@ -31,6 +33,19 @@ class UserController extends BaseController
     public function pengajuan_surat()
     {
         return view('user/pengajuan_surat');
+        $currentYear = date('Y');
+        $startYear = $currentYear - 2; // Dua tahun sebelum tahun sekarang
+        $startDate = "$startYear-01-01";
+        $endDate = "$currentYear-12-31";
+
+        $data['surat_terbanyak'] = $this->ArsipModel->getSuratDosen('most');
+        $data['surat_tersedikit'] = $this->ArsipModel->getSuratDosen('less');
+        $data['prodi'] = $this->ArsipModel->distinct()->findColumn('prodi');
+        $data['perihal_dosen'] = $this->ArsipModel->getPerihalDosen($startDate, $endDate);
+        $data['startYear'] = $startYear;
+        $data['endYear'] = $currentYear;
+
+        return view('user/new_dashboard_user', $data);
     }
 
     public function pengajuansurat_keputusan()
@@ -38,19 +53,19 @@ class UserController extends BaseController
         $data['dosen'] = $this->DosenModel->findAll();
         return view('user/pengajuansurat_keputusan', $data);
     }
-    
+
     public function pengajuansurat_tugas()
     {
         $data['dosen'] = $this->DosenModel->findAll();
         return view('user/pengajuansurat_tugas', $data);
     }
-    
+
     public function pengajuansurat_formal()
     {
         $data['dosen'] = $this->DosenModel->findAll();
         return view('user/pengajuansurat_formal', $data);
     }
-    
+
 
     public function daftar_surat()
     {
@@ -58,7 +73,7 @@ class UserController extends BaseController
         $data['surat'] = $this->MergedSurat->where('id_dekanat', $id_dekanat)->findAll();
         return view('user/daftar_surat', $data);
     }
-    
+
     public function daftar_dosen()
     {
         $data['dosen'] = $this->DosenModel->findAll();
