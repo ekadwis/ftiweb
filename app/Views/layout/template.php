@@ -35,7 +35,7 @@
                             Tools & Components
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
+                            <a href="<?= base_url(); ?>" class="sidebar-link">
                                 <i class="fa-solid fa-house"></i>
                                 Home
                             </a>
@@ -73,7 +73,7 @@
                                     <a href="/admin/surattugas" class="sidebar-link">Surat Tugas</a>
                                 </li>
                                 <li class="sidebar-item">
-                                    <a href="/admin/suratkeputusan" class="sidebar-lin k">Surat Keputusan</a>
+                                    <a href="/admin/suratkeputusan" class="sidebar-link">Surat Keputusan</a>
                                 </li>
                             </ul>
                         </li>
@@ -170,6 +170,14 @@
             <main class="content px-3 py-2">
                 <div class="container-fluid">
                     <div class="mb-3">
+                        <div class="container pt-4">
+                            <?php if (session()->getFlashdata('msg')) : ?>
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <?= session()->getFlashdata('msg'); ?>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                         <?= $this->renderSection('content'); ?>
                     </div>
                 </div>

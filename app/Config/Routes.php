@@ -6,14 +6,11 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// Auth
-
-// $routes->get('/login', 'AuthController::login');
-// $routes->get('/register', 'AuthController::register');
 
 // Administrator
 $routes->get('/', 'AdminController::index', ['filter' => 'role:administrator']);
 $routes->post('/ubahprofile', 'AdminController::ubahprofile');
+$routes->get('admin/download/(:segment)', 'AdminController::downloadFile/$1');
 $routes->group('admin', ['filter' => 'role:administrator'], function($routes) {
     $routes->get('/', 'AdminController::index');
     $routes->get('pengajuansurat', 'AdminController::pengajuanSurat');
@@ -34,13 +31,15 @@ $routes->group('admin', ['filter' => 'role:administrator'], function($routes) {
     $routes->get('detail_permohonan_ttd/(:any)', 'AdminController::detail_permohonan_ttd/$1');
     $routes->post('edit_permohonan_ttd', 'AdminController::edit_permohonan_ttd');
     $routes->get('approved_permohonan_ttd/(:any)', 'AdminController::approved_permohonan_ttd/$1');
-    $routes->get('download/(:segment)', 'AdminController::downloadFile/$1');
     $routes->post('submit_revisi_pengajuan_surat', 'AdminController::submit_revisi_pengajuan_surat');
+    $routes->post('surat_masuk_keputusan', 'AdminController::surat_masuk_keputusan');
+    $routes->post('surat_masuk_tugas', 'AdminController::surat_masuk_tugas');
 });
 
 // Users 
 $routes->group('user', ['filter' => 'role:user'], function($routes) {
     $routes->get('dashboard', 'UserController::dashboard');
+    $routes->get('pengajuan_surat', 'UserController::pengajuan_surat');
     $routes->get('pengajuansurat_keputusan', 'UserController::pengajuansurat_keputusan');
     $routes->get('pengajuansurat_tugas', 'UserController::pengajuansurat_tugas');
     $routes->get('pengajuansurat_formal', 'UserController::pengajuansurat_formal');
@@ -48,6 +47,7 @@ $routes->group('user', ['filter' => 'role:user'], function($routes) {
     $routes->get('daftardosen', 'UserController::daftar_dosen');
     $routes->get('detail', 'UserController::detail');
     $routes->get('detail', 'UserController::detail');
+    $routes->get('revisi/(:any)', 'UserController::revisi/$1');
     $routes->post('tambahdosen', 'UserController::tambahdosen');
     $routes->post('submit_pengajuansurat_tugas', 'SuratController::submit_pengajuansurat_tugas');
     $routes->post('submit_pengajuansurat_keputusan', 'SuratController::submit_pengajuansurat_keputusan');

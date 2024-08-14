@@ -6,22 +6,30 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\DosenModel;
 use App\Models\SuratModel;
+use App\Models\MergedSurat;
 
 class UserController extends BaseController
 {
 
     protected $DosenModel;
     protected $SuratModel;
+    protected $MergedSurat;
 
     public function __construct()
     {
         $this->DosenModel = new DosenModel();
         $this->SuratModel = new SuratModel();
+        $this->MergedSurat = new MergedSurat();
     }
 
     public function dashboard()
     {
         return view('user/new_dashboard_user');
+    }
+
+    public function pengajuan_surat()
+    {
+        return view('user/pengajuan_surat');
     }
 
     public function pengajuansurat_keputusan()
@@ -45,7 +53,8 @@ class UserController extends BaseController
 
     public function daftar_surat()
     {
-        $data['surat'] = $this->SuratModel->findAll();
+        $id_dekanat = user()->id;
+        $data['surat'] = $this->MergedSurat->where('id_dekanat', $id_dekanat)->findAll();
         return view('user/daftar_surat', $data);
     }
     
@@ -79,6 +88,14 @@ class UserController extends BaseController
         ];
 
         $this->DosenModel->insert($data);
-        return redirect()->to('/user/daftardosen');
+        return redirect()->to('/user/daftardosen')->with('msg-dosen', 'Dosen baru berhasil ditambahkan.');
+    }
+
+    public function revisi($id_merged)
+    {
+        $revisi = $this->MergedSurat->getRevisi($id_merged);
+        $data['revisi'] = $revisi[0];
+        
+        return view('user/revisi', $data);
     }
 }

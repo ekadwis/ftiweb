@@ -1,7 +1,14 @@
 <?= $this->extend('layout/template'); ?>
 
 <?= $this->section('content') ?>
-
+<div class="container pt-4">
+    <?php if (session()->getFlashdata('msg')) : ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= session()->getFlashdata('msg'); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+</div>
 <h2 class="my-5 fw-bold">Data Arsip Surat</h2>
 <!-- Table  -->
 <table id="example" class="display" style="width:100%;">
@@ -12,7 +19,7 @@
             <th>Kode Surat</th>
             <th>Perihal</th>
             <th>Kegiatan</th>
-            <th>Nik</th>
+            <th>Nama Dosen</th>
             <th>Prodi</th>
             <th>Periode</th>
             <th>Pembuat</th>
@@ -29,11 +36,11 @@
             <td><?= $srt['kode_surat']; ?></td>
             <td><?= $srt['perihal']; ?></td>
             <td><?= $srt['kegiatan_keperluan']; ?></td>
-            <td><?= $srt['nik_dosen']; ?></td>
+            <td><?= $srt['nama_dosen']; ?></td>
             <td><?= $srt['prodi']; ?></td>
             <td><?= $srt['periode_awal']; ?> s.d <?= $srt['periode_akhir']; ?></td>
             <td><?= $srt['author']; ?></td>
-            <td>Aksi</td>
+            <td class="text-center"><a href="<?= site_url('admin/download/' . $srt['lampiran']); ?>" class="btn btn-warning"><box-icon type='solid' name='cloud-download'></box-icon></a></td>
         </tr>
         <?php endforeach; ?>
     </tbody>

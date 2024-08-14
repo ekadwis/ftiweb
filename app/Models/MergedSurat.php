@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ArsipSuratModel extends Model
+class MergedSurat extends Model
 {
-    protected $table            = 'arsip_surat';
-    protected $primaryKey       = 'id_arsip';
+    protected $table            = 'combined_surat_view';
+    protected $primaryKey       = 'id_merged';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id_permohonan', 'id_surat', 'id_dekanat', 'id_dosen', 'tanggal', 'kode_surat', 'perihal', 'jenis_surat', 'tujuan', 'prodi', 'nama_dosen', 'nik_dosen', 'kegiatan_keperluan', 'periode_awal', 'periode_akhir', 'sifat', 'tembusan', 'catatan', 'lampiran', 'no_urut', 'status', 'revisi', 'author'];
+    protected $allowedFields    = [];
 
     protected bool $allowEmptyInserts = false;
 
@@ -39,4 +39,10 @@ class ArsipSuratModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getRevisi($id_merged)
+    {
+        return $this->where('id_merged', $id_merged)
+                    ->findColumn('revisi');
+    }
 }

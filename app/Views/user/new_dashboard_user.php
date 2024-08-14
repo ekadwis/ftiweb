@@ -1,7 +1,6 @@
 <?= $this->extend('layout/template_user'); ?>
 
 <?= $this->section('content') ?>
-
 <div class="row mt-5">
     <div class="d-flex justify-content-between">
         <div class="d-flex align-items-center gap-3">

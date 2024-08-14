@@ -45,7 +45,7 @@
            <td class="text-center"><a href="<?= site_url('admin/download/' . $srt['lampiran']); ?>" class="btn btn-warning"><box-icon type='solid' name='cloud-download'></box-icon></a></td>
             <td style="width: 60px;">
                 <a href="<?= base_url(); ?>admin/detail_permohonan_ttd/<?= $srt['id_permohonan']; ?>"><box-icon name='detail'></box-icon></a>
-                <a href="<?= base_url(); ?>admin/approved_permohonan_ttd/<?= $srt['id_permohonan']; ?>"><box-icon name='check'></box-icon></a>
+                <a href="<?= base_url(); ?>d/approved_permohonan_ttd/<?= $srt['id_permohonan']; ?>"><box-icon name='check'></box-icon></a>
             </td>
         </tr>
        <?php endforeach; ?>

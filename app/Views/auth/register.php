@@ -14,7 +14,7 @@
         <!-- Content  -->
         <h2 class="text-center fw-bold mt-3"><?= lang('Auth.register') ?></h2>
         <?= view('Myth\Auth\Views\_message_block') ?>
-        <form action="<?= url_to('register') ?>" method="post" enctype="multipart/form-data" class="m-auto mt-3">
+        <form action="<?= url_to('register') ?>" method="post" enctype="multipart/form-data" class="m-auto mt-3 mb-5">
             <?= csrf_field(); ?>
             <div class="mb-3">
                 <label for="username"><?= lang('Auth.username') ?></label>
@@ -64,9 +64,8 @@
             </div> -->
 
             <button type="submit" class="btn btn-primary btn-block float-end mt-3"><?=lang('Auth.register')?></button>
-            <br><br>
+            <p class="mt-5"><?=lang('Auth.alreadyRegistered')?> <a href="<?= url_to('login') ?>"><?=lang('Auth.signIn')?></a></p>
         </form>
-        <p class="text-center"><?=lang('Auth.alreadyRegistered')?> <a href="<?= url_to('login') ?>"><?=lang('Auth.signIn')?></a></p>
     </div>
 
     <!-- Javascript  -->

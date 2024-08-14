@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 
+<?php if (session()->getFlashdata('msg-dosen')) : ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('msg-dosen'); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
 <div class="row">
     <div class="col">
         <h2 class="my-5 fw-bold">Daftar Dosen</h2>
@@ -12,9 +19,6 @@
         </button>
     </div>
 </div>
-
-
-
 
 <!-- Tambah Data Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

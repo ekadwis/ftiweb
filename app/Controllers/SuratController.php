@@ -96,11 +96,11 @@ class SuratController extends BaseController
                 $this->SuratModel->insert($data);
             } else {
                 // Jika data dosen tidak ditemukan, log kesalahan atau lewati iterasi
-                continue;
+                return redirect()->to('/user/pengajuansurat_tugas')->with('msg-failed', 'Dosen belum ditambahkan');
             }
         }
 
-        return redirect()->to('/user/daftarsurat');
+        return redirect()->to('/user/daftarsurat')->with('msg-surat', 'Surat baru berhasil ditambahkan.');
     }
 
     public function submit_pengajuansurat_keputusan()
@@ -180,11 +180,12 @@ class SuratController extends BaseController
                 $this->SuratModel->insert($data);
             } else {
                 // Jika data dosen tidak ditemukan, log kesalahan atau lewati iterasi
-                continue;
+                return redirect()->to('/user/pengajuansurat_keputusan')->with('msg-failed', 'Dosen belum ditambahkan');
+                break;
             }
         }
 
-        return redirect()->to('/user/daftarsurat');
+        return redirect()->to('/user/daftarsurat')->with('msg-surat', 'Surat baru berhasil ditambahkan.');
     }
 
     public function submit_pengajuansurat_formal()
@@ -259,10 +260,10 @@ class SuratController extends BaseController
             $this->SuratModel->insert($data);
         } else {
             // Jika data dosen tidak ditemukan, log kesalahan atau lewati iterasi
-            return redirect()->to('/user/pengajuansurat_formal');
+            return redirect()->to('/user/pengajuansurat_formal')->with('msg-failed', 'Dosen belum ditambahkan');
         }
 
 
-        return redirect()->to('/user/daftarsurat');
+        return redirect()->to('/user/daftarsurat')->with('msg-surat', 'Surat baru berhasil ditambahkan.');
     }
 }

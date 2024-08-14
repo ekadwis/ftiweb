@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 
+<?php if (session()->getFlashdata('msg-failed')) : ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('msg-failed'); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
 <div class="container">
     <form action="<?= base_url(); ?>user/submit_pengajuansurat_formal" method="POST" enctype="multipart/form-data" class="m-4 p-5 border border-dark">
     <?= csrf_field(); ?>

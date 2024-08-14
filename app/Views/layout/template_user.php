@@ -40,21 +40,10 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#pengajuansurat" aria-expanded="false" aria-controls="pengajuansurat">
-                            <i class="fa-solid fa-users"></i>
+                        <a href="<?= base_url(); ?>user/pengajuan_surat" class="sidebar-link">
+                            <i class="fa-solid fa-house"></i>
                             Pengajuan Surat
                         </a>
-                        <ul id="pengajuansurat" class="sidebar-dropdown list-unstyled collapse ps-3" data-bs-parent="#sidebar">
-                            <li class="sidebar-item">
-                                <a href="<?= base_url(); ?>user/pengajuansurat_keputusan" class="sidebar-link">Surat Keputusan</a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="<?= base_url(); ?>user/pengajuansurat_tugas" class="sidebar-link">Surat Tugas</a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="<?= base_url(); ?>user/pengajuansurat_formal" class="sidebar-link">Surat Formal</a>
-                            </li>
-                        </ul>
                     </li>
                     <li class="sidebar-item">
                         <a href="<?= base_url(); ?>user/daftarsurat" class="sidebar-link">
@@ -88,6 +77,12 @@
             <main class="content px-3 py-2">
                 <div class="container-fluid">
                     <div class="mb-3">
+                        <?php if (session()->getFlashdata('msg')) : ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <?= session()->getFlashdata('msg'); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
                         <?= $this->renderSection('content'); ?>
                     </div>
                 </div>

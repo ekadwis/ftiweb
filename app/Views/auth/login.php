@@ -11,6 +11,23 @@
 
 <body>
     <div class="container">
+        <div class="container pt-4 w-50 mx-auto">
+            <?php if (session()->getFlashdata('msg')) : ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashdata('msg'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="container pt-4 w-50 mx-auto">
+            <?php if (session()->getFlashdata('msg-regist')) : ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashdata('msg-regist'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+        </div>
         <!-- Content  -->
         <form action="<?= url_to('login') ?>" method="post" enctype="multipart/form-data" class="m-auto mt-5">
             <?= csrf_field(); ?>
@@ -28,8 +45,8 @@
                     <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                 </div>
             <?php else : ?>
-                <div class="form-group">
-                    <label for="login">Email address</label>
+                <div class="form-group mb-3">
+                    <label for="login" class="mb-2">Email address</label>
                     <input type="text" class="form-control <?php if (session('errors.login')) : ?>is-invalid<?php endif ?>" name="login" placeholder="<?= lang('Auth.emailOrUsername') ?>">
                     <div class="invalid-feedback">
                         <?= session('errors.login') ?>
@@ -38,7 +55,7 @@
             <?php endif; ?>
 
             <div class="mb-3">
-                <label for="password"><?= lang('Auth.password') ?></label>
+                <label for="password" class="mb-2"><?= lang('Auth.password') ?></label>
                 <input type="password" name="password" class="form-control  <?php if (session('errors.password')) : ?>is-invalid<?php endif ?>" placeholder="<?= lang('Auth.password') ?>">
                 <div class="invalid-feedback">
                     <?= session('errors.password') ?>
