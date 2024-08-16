@@ -27,25 +27,14 @@ class UserController extends BaseController
 
     public function dashboard()
     {
-        return view('user/new_dashboard_user');
+        $data['prodi'] = $this->ArsipModel->distinct()->findColumn('prodi');
+
+        return view('user/new_dashboard_user', $data);
     }
 
     public function pengajuan_surat()
     {
         return view('user/pengajuan_surat');
-        $currentYear = date('Y');
-        $startYear = $currentYear - 2; // Dua tahun sebelum tahun sekarang
-        $startDate = "$startYear-01-01";
-        $endDate = "$currentYear-12-31";
-
-        $data['surat_terbanyak'] = $this->ArsipModel->getSuratDosen('most');
-        $data['surat_tersedikit'] = $this->ArsipModel->getSuratDosen('less');
-        $data['prodi'] = $this->ArsipModel->distinct()->findColumn('prodi');
-        $data['perihal_dosen'] = $this->ArsipModel->getPerihalDosen($startDate, $endDate);
-        $data['startYear'] = $startYear;
-        $data['endYear'] = $currentYear;
-
-        return view('user/new_dashboard_user', $data);
     }
 
     public function pengajuansurat_keputusan()
@@ -84,13 +73,14 @@ class UserController extends BaseController
     {
         $request = \Config\Services::request();
         $section = $request->getVar('section');
-        $arrKeja = ["pengabdian", "pengajaran", "penelitian", "penunjang"];
+        $data['prodi'] = $this->ArsipModel->distinct()->findColumn('prodi');
+        $data['detail'] =  $this->ArsipModel->findBySection($section);;
 
-        if (!in_array($section, $arrKeja)) {
+        if (! $data['detail']) {
             return view('not_found');
         }
 
-        return view('user/detail', ['section' => $section]);
+        return view('user/detail', $data);
     }
 
     public function tambahdosen()
@@ -111,7 +101,43 @@ class UserController extends BaseController
     {
         $revisi = $this->MergedSurat->getRevisi($id_merged);
         $data['revisi'] = $revisi[0];
-        
+
         return view('user/revisi', $data);
+    }
+    public function chartSurat()
+    {
+        $request = \Config\Services::request();
+        $startDate = $request->getVar('startDate');
+        $endDate = $request->getVar('endDate');
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->chartSurat($startDate, $endDate, $prodi);
+
+        return $this->response->setJSON($data);
+    }
+
+    public function suratData()
+    {
+        $request = \Config\Services::request();
+        $startDate = $request->getVar('startDate');
+        $endDate = $request->getVar('endDate');
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->getPerihalDosen($startDate, $endDate, $prodi);
+
+        return $this->response->setJSON($data);
+    }
+
+    public function suratDosen()
+    {
+        $request = \Config\Services::request();
+        $type = $request->getVar('type');
+        $startDate = $request->getVar('startDate');
+        $endDate = $request->getVar('endDate');
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->getSuratDosen($type, $startDate, $endDate, $prodi);
+
+        return $this->response->setJSON($data);
     }
 }

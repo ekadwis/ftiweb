@@ -15,7 +15,7 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'AdminController::index', ['filter' => 'role:administrator']);
 $routes->post('/ubahprofile', 'AdminController::ubahprofile');
 $routes->get('admin/download/(:segment)', 'AdminController::downloadFile/$1');
-$routes->group('admin', ['filter' => 'role:administrator'], function($routes) {
+$routes->group('admin', ['filter' => 'role:administrator'], function ($routes) {
     $routes->get('/', 'AdminController::index');
     $routes->get('pengajuansurat', 'AdminController::pengajuanSurat');
     $routes->get('permohonanttd', 'AdminController::permohonanttd');
@@ -41,8 +41,11 @@ $routes->group('admin', ['filter' => 'role:administrator'], function($routes) {
 });
 
 // Users 
-$routes->group('user', ['filter' => 'role:user'], function($routes) {
+$routes->group('user', ['filter' => 'role:user'], function ($routes) {
     $routes->get('dashboard', 'UserController::dashboard');
+    $routes->get('chart-data', 'UserController::chartSurat');
+    $routes->get('surat-data', 'UserController::suratData');
+    $routes->get('surat-dosen', 'UserController::suratDosen');
     $routes->get('pengajuan_surat', 'UserController::pengajuan_surat');
     $routes->get('pengajuansurat_keputusan', 'UserController::pengajuansurat_keputusan');
     $routes->get('pengajuansurat_tugas', 'UserController::pengajuansurat_tugas');

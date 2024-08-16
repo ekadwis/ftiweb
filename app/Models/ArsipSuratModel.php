@@ -41,17 +41,20 @@ class ArsipSuratModel extends Model
     protected $afterDelete    = [];
 
 
-    public function getSuratDosen($params)
+    public function getSuratDosen($type, $startDate, $endDate, $prodi)
     {
         // Ambil NIK dari user yang sedang login
         $nikUser = user()->nik_user;
 
         // Tentukan arah pengurutan berdasarkan parameter
-        $order = ($params === 'most') ? 'DESC' : 'ASC';
+        $order = ($type === 'most') ? 'DESC' : 'ASC';
 
         // Query untuk mendapatkan data dosen dengan pengurutan surat sesuai parameter
         $query = $this->select('dosen.nama_dosen, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat')
             ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
+            ->where('arsip_surat.periode_awal >=', $startDate)
+            ->where('arsip_surat.periode_akhir <=', $endDate)
+            ->where('arsip_surat.prodi =', $prodi)
             ->groupBy('dosen.nama_dosen, dosen.nik_dosen')
             ->orderBy('jumlah_surat', $order)
             ->limit(5);
@@ -66,22 +69,89 @@ class ArsipSuratModel extends Model
 
         // Jika tidak ada hasil, ulangi query tanpa kondisi where
         if (empty($result)) {
-            $result = $this->select('dosen.nama_dosen, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat')
-                ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
-                ->groupBy('dosen.nama_dosen, dosen.nik_dosen')
-                ->orderBy('jumlah_surat', $order)
-                ->limit(5)
-                ->findAll();
+            $result = array(
+                array(
+                    "nama_dosen" => "Data Tidak ada",
+                    "jumlah_surat" => "0"
+                )
+            );
         }
+
 
         return $result;
     }
-    public function getPerihalDosen($startDate, $endDate)
+    public function getPerihalDosen($startDate, $endDate, $prodi)
     {
-        return $this->select('arsip_surat.id_surat, arsip_surat.perihal, arsip_surat.periode_awal, arsip_surat.periode_akhir, COUNT(arsip_surat.id_dosen) as jumlah_dosen, COUNT(arsip_surat.perihal) as jumlah_perihal')
+        return $this->select('*, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat, arsip_surat.periode_akhir, COUNT(id_dosen) as jumlah_dosen')
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
-            ->groupBy('arsip_surat.perihal')
+            ->where('arsip_surat.prodi =', $prodi)
+            ->groupBy(['arsip_surat.perihal', 'arsip_surat.periode_awal', 'arsip_surat.periode_akhir'])
             ->findAll();
+    }
+
+    public function findBySection($section)
+    {
+        return $this->select('arsip_surat.perihal, arsip_surat.nama_dosen, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
+            ->where('arsip_surat.perihal =', $section)
+            ->findAll();
+    }
+
+    public function chartSurat($startDate, $endDate, $prodi)
+    {
+        $perihalDosen = $this->getPerihalDosen($startDate, $endDate, $prodi);
+        $groupedSurat = [];
+        $categories = [];
+
+        $startYear = date('Y', strtotime($startDate));
+        $endYear = date('Y', strtotime($endDate));
+
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            $categories[] = $year . '/' . ($year + 1) . ' <br> Gasal';
+            $categories[] = $year . '/' . ($year + 1) . ' <br> Genap';
+        }
+
+        $categoriesMap = array_fill_keys($categories, 0);
+
+        foreach ($perihalDosen as $item) {
+            if (stripos($item['perihal'], 'Penelitian') !== false) {
+                $key = 'Penelitian';
+            } elseif (stripos($item['perihal'], 'Pengabdian') !== false) {
+                $key = 'Pengabdian';
+            } else {
+                $key = 'Lainnya';
+            }
+
+            if (!isset($groupedSurat[$key])) {
+                $groupedSurat[$key] = $categoriesMap;
+            }
+
+            $periode = date('Y', strtotime($item['periode_awal'])) . '/' . (date('Y', strtotime($item['periode_awal'])) + 1);
+            $semester = (date('m', strtotime($item['periode_awal'])) <= 6) ? 'Genap' : 'Gasal';
+            $category = $periode . ' <br> ' . $semester;
+
+            if (isset($groupedSurat[$key][$category])) {
+                $groupedSurat[$key][$category] += (int) $item['jumlah_surat'];
+            }
+        }
+
+        $series = [];
+        foreach ($groupedSurat as $key => $data) {
+            $series[] = [
+                'name' => $key,
+                'data' => array_values($data)
+            ];
+        }
+        if (empty($series)) {
+            $series[] = [
+                'name' => 'No Data',
+                'data' => array_fill(0, count($categories), 0)
+            ];
+        }
+
+        return [
+            'series' => $series,
+            'categories' => $categories
+        ];
     }
 }

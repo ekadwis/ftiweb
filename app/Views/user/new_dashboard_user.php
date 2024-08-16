@@ -6,9 +6,9 @@
         <div class="d-flex align-items-center gap-3">
             <div class="fs-5 fw-bold">Program Studi</div>
             <div>
-                <select class="form-select form-select-sm" aria-label="Default select example">
+                <select id="prodiSelect" class="form-select form-select-sm" aria-label="Default select example">
                     <?php foreach ($prodi as $index => $data): ?>
-                        <option value="<?= $index; ?>" <?= $index == 0 ? 'selected' : ''; ?>><?= $data; ?></option>
+                        <option value="<?= $data; ?>" <?= $data == 0 ? 'selected' : ''; ?>><?= $data; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -24,22 +24,10 @@
             </div>
         </div>
     </div>
-    <div class="row row-cols-4 my-4 gap-3">
-        <?php foreach ($perihal_dosen as $data): ?>
-            <div class="card col">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class=""><?= $data['perihal']; ?></div>
-                        <a href="/user/detail?section=<?= $data['perihal']; ?>" type="button" class="btn btn-dark btn-sm">Detail</a>
-                    </div>
-                    <div class="text-center">
-                        <p class="card-text fs-3 fw-bold"><?= $data['jumlah_perihal']; ?></p>
-                        <p class="card-text fw-normal fs-5"><?= $data['jumlah_dosen']; ?> Dosen</p>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
+    <div class="row row-cols-4 my-4 gap-3 card-surat">
+        <!-- Card elements will be dynamically inserted here by renderSuratCards function -->
     </div>
+
     <!-- Line Chart -->
     <figure class="highcharts-figure">
         <div id="container"></div>
@@ -55,13 +43,14 @@
         </figure>
     </div>
 </div>
+
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script>
-    const currentYear = new Date().getFullYear();
-    const startYear = 2020;
+    var currentYear = new Date().getFullYear();
+    var startYear = 2020;
+    var selectedProdi = "Sistem Informasi"
 
-    // Populate both selects (2020 to current year)
     const selectStartYear = document.getElementById("selectStartYear");
     const selectEndYear = document.getElementById("selectEndYear");
 
@@ -79,235 +68,391 @@
         selectEndYear.appendChild(optionEnd);
     }
 
-    // Set default selected values
     selectStartYear.value = startYear;
     selectEndYear.value = currentYear;
+
+    document.getElementById('prodiSelect').addEventListener('change', (event) => {
+        selectedProdi = event.target.value;
+
+        fetchDataFromBackend(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            renderChart(data);
+        });
+        fecthSuratData(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            renderSuratCards(data);
+        });
+        fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            renderMostChart(data);
+        });
+        fetchDataLessSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            renderLessChart(data);
+        });
+    });
+
+    function updateEndYearOptions() {
+        const startYearValue = parseInt(selectStartYear.value, 10);
+
+        // Enable all options in selectEndYear first
+        Array.from(selectEndYear.options).forEach(option => {
+            option.disabled = false;
+        });
+
+        // Disable options less than the selected startYear
+        Array.from(selectEndYear.options).forEach(option => {
+            if (parseInt(option.value, 10) < startYearValue) {
+                option.disabled = true;
+            }
+        });
+
+        // If the current end year is less than the selected start year, update it
+        if (parseInt(selectEndYear.value, 10) < startYearValue) {
+            selectEndYear.value = startYearValue;
+        }
+    }
+
+    function handleYearChange() {
+        startYear = selectStartYear.value;
+        currentYear = selectEndYear.value;
+        fetchDataFromBackend(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            renderChart(data);
+        });
+        fecthSuratData(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            renderSuratCards(data);
+        });
+        fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            console.log(data, 'DATA ININI');
+            
+            renderMostChart(data);
+        });
+        fetchDataLessSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+            renderLessChart(data);
+        });
+    }
+
+    selectStartYear.addEventListener("change", () => {
+        updateEndYearOptions();
+        handleYearChange();
+    });
+
+    selectEndYear.addEventListener("change", handleYearChange);
+
+    // Initialize end year options on page load
+    updateEndYearOptions();
 </script>
 
 <script>
-    var mostSurat = <?= json_encode($surat_terbanyak) ?>;
-    var lessSurat = <?= json_encode($surat_tersedikit) ?>;
+    function renderSuratCards(data) {
+        const groupedSurat = [];
 
-    var data = <?= json_encode($perihal_dosen) ?>;
+        data.forEach(item => {
+            let key;
 
-    // Fungsi untuk membuat kategori berdasarkan tahun saat ini
-    function createCategories() {
-        const currentYear = new Date().getFullYear();
-        const startYear = currentYear - 2; // Dua tahun sebelum tahun sekarang
-        const categories = [];
+            // Mencari kata kunci "Penelitian" atau "Pengabdian"
+            if (item.perihal.includes('Penelitian')) {
+                key = 'Penelitian';
+            } else if (item.perihal.includes('Pengabdian')) {
+                key = 'Pengabdian';
+            } else {
+                key = 'Lainnya'; // Untuk perihal yang tidak termasuk penelitian atau pengabdian
+            }
 
-        for (let year = startYear; year <= currentYear; year++) {
-            categories.push(`${year}/${year + 1} <br> Gasal`);
-            categories.push(`${year}/${year + 1} <br> Genap`);
+            // Menggabungkan data dengan kategori yang sesuai
+            let found = groupedSurat.find(group => group.perihal === key);
+
+            if (!found) {
+                groupedSurat.push({
+                    perihal: key,
+                    jumlah_surat: parseInt(item.jumlah_surat),
+                    jumlah_dosen: parseInt(item.jumlah_dosen)
+                });
+            } else {
+                found.jumlah_surat += parseInt(item.jumlah_surat);
+                found.jumlah_dosen += parseInt(item.jumlah_dosen);
+            }
+        });
+
+        const container = document.querySelector('.card-surat');
+        container.innerHTML = ""; // Menghapus konten yang ada di dalam container
+
+        // Mencetak hasil ke dalam elemen HTML
+        if (groupedSurat.length > 0) {
+            groupedSurat.forEach(data => {
+                // Buat elemen card secara dinamis
+                const card = document.createElement('div');
+                card.className = 'card col';
+
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body d-flex flex-column justify-content-between';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'd-flex justify-content-between align-items-start';
+
+                const title = document.createElement('div');
+                title.className = 'fs-5';
+                title.textContent = data.perihal;
+
+                const detailButton = document.createElement('a');
+                detailButton.href = `/user/detail?section=${data.perihal}`;
+                detailButton.className = 'btn btn-dark btn-sm';
+                detailButton.textContent = 'Detail';
+
+                const textCenterDiv = document.createElement('div');
+                textCenterDiv.className = 'text-center';
+
+                const jumlahSurat = document.createElement('p');
+                jumlahSurat.className = 'card-text fs-3 fw-bold';
+                jumlahSurat.textContent = data.jumlah_surat;
+
+                const jumlahDosen = document.createElement('p');
+                jumlahDosen.className = 'card-text fw-normal fs-5';
+                jumlahDosen.textContent = `${data.jumlah_dosen} Dosen`;
+
+                // Susun elemen
+                headerDiv.appendChild(title);
+                headerDiv.appendChild(detailButton);
+                cardBody.appendChild(headerDiv);
+                textCenterDiv.appendChild(jumlahSurat);
+                textCenterDiv.appendChild(jumlahDosen);
+                cardBody.appendChild(textCenterDiv);
+                card.appendChild(cardBody);
+
+                // Masukkan card ke dalam container
+                container.appendChild(card);
+            });
+        } else {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'text-center col-12 py-4';
+            emptyMessage.textContent = 'Data Tidak ada';
+            container.appendChild(emptyMessage);
         }
+    }
+    fetchDataFromBackend(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
+        renderChart(data);
+    });
+    fecthSuratData(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
+        renderSuratCards(data)
+    });
 
-        return categories;
+    function fecthSuratData(startDate, endDate, prodi) {
+        return fetch(`http://localhost:8080/user/surat-data?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null; // Mengembalikan null jika ada error
+            });
     }
 
-    // Buat kategori dinamis
-    const categories = createCategories();
+    function fetchDataFromBackend(startDate, endDate, prodi) {
+        return fetch(`http://localhost:8080/user/chart-data?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null; // Mengembalikan null jika ada error
+            });
+    }
 
-    // Menyiapkan object untuk series data
-    const seriesData = {};
 
-    data.forEach(item => {
-        const periodeAwalBulan = new Date(item.periode_awal).getMonth() + 1; // Bulan dari 1 - 12
-        const periodeAkhirBulan = new Date(item.periode_akhir).getMonth() + 1;
-        const periodeTahun = new Date(item.periode_awal).getFullYear();
+    // Render Chart
+    function renderChart(data) {
 
-        let category;
-
-        // Tentukan kategori berdasarkan bulan (Gasal atau Genap)
-        if (periodeAwalBulan <= 6 && periodeAkhirBulan <= 6) {
-            category = `${periodeTahun - 1}/${periodeTahun} <br> Gasal`;
-        } else {
-            category = `${periodeTahun - 1}/${periodeTahun} <br> Genap`;
+        if (!data) {
+            console.error('No data available for chart rendering');
+            return;
         }
 
-        // Jika series dengan nama perihal belum ada, buat baru
-        if (!seriesData[item.perihal]) {
-            seriesData[item.perihal] = Array(categories.length).fill(0);
-        }
-
-        // Temukan index kategori di categories dan tambahkan jumlah_perihal ke series
-        const categoryIndex = categories.indexOf(category);
-        if (categoryIndex !== -1) {
-            seriesData[item.perihal][categoryIndex] += parseInt(item.jumlah_perihal);
-        }
-    });
-
-    // Konversi seriesData menjadi array untuk highcharts
-    const series = Object.keys(seriesData).map(key => ({
-        name: key,
-        data: seriesData[key]
-    }));
-
-    // Konfigurasi Highcharts
-    Highcharts.chart('container', {
-        title: {
-            text: 'Jenis - Jenis Beban Kerja Dosen Berdasarkan Periode',
-            align: 'left'
-        },
-
-        yAxis: {
+        Highcharts.chart('container', {
             title: {
-                text: 'Jumlah'
-            }
-        },
+                text: 'Jenis - Jenis Beban Kerja Dosen Berdasarkan Periode',
+                align: 'left'
+            },
 
-        xAxis: {
-            categories: categories,
-            labels: {
-                useHTML: true,
-                style: {
-                    fontWeight: 'bold',
-                    textAlign: 'center'
+            yAxis: {
+                title: {
+                    text: 'Jumlah'
                 }
             },
-            accessibility: {
-                rangeDescription: `Range: ${categories[0]} to ${categories[categories.length - 1]}`
-            }
-        },
 
-        legend: {
-            enabled: false,
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle'
-        },
-
-        plotOptions: {
-            series: {
-                label: {
-                    connectorAllowed: false
-                },
-                marker: {
-                    enabled: true,
-                    symbol: 'circle'
-                }
-            }
-        },
-
-        series: series,
-
-        responsive: {
-            rules: [{
-                condition: {
-                    maxWidth: 500
-                },
-                chartOptions: {
-                    legend: {
-                        layout: 'horizontal',
-                        align: 'center',
-                        verticalAlign: 'bottom'
-                    }
-                }
-            }]
-        }
-    });
-    // Most Lecture
-    Highcharts.chart('bar-container', {
-        chart: {
-            type: 'bar'
-        },
-        title: {
-            text: 'Dosen Dengan Kegiatan Terbanyak'
-        },
-        xAxis: {
-            categories: mostSurat.map((v, i) => {
-                return v.nama_dosen
-            }),
-            plotLines: [{
-                color: '#000000',
-                width: 1,
-                value: 4.5 // Garis berada di atas kategori pertama
-            }]
-        },
-        yAxis: {
-            allowDecimals: false,
-            min: 0,
-            title: {
-                text: ''
-            }
-
-        },
-        legend: {
-            enabled: false,
-            reversed: true
-        },
-        plotOptions: {
-            series: {
-                stacking: 'normal',
-                dataLabels: {
-                    enabled: false,
+            xAxis: {
+                categories: data.categories, // Mengambil categories dari backend
+                labels: {
+                    useHTML: true,
                     style: {
-                        color: '#FFFFFF'
+                        fontWeight: 'bold',
+                        textAlign: 'center'
                     }
+                },
+                accessibility: {
+                    rangeDescription: `Range: ${data.categories[0]} to ${data.categories[data.categories.length - 1]}`
                 }
-            }
-        },
-        series: [{
-            name: 'Kegiatan',
-            data: mostSurat.map((v, i) => {
-                return parseInt(v.jumlah_surat)
-            }),
-        }]
-    });
-    Highcharts.chart('bar-container-2', {
-        chart: {
-            type: 'bar'
-        },
-        title: {
-            text: 'Dosen Dengan Kegiatan Sedikit'
-        },
-        xAxis: {
-            categories: lessSurat.map((v, i) => {
-                return v.nama_dosen
-            }),
-            plotLines: [{
-                color: '#000000',
-                width: 1,
-                value: 4.5 // Garis berada di atas kategori pertama
-            }]
-        },
-        yAxis: {
-            allowDecimals: false,
-            min: 0,
-            title: {
-                text: ''
-            }
+            },
 
-        },
-        legend: {
-            enabled: false,
-            reversed: true
-        },
-        plotOptions: {
-            series: {
-                stacking: 'normal',
-                dataLabels: {
-                    enabled: false,
-                    style: {
-                        color: '#FFFFFF'
+            legend: {
+                enabled: false,
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+
+            plotOptions: {
+                series: {
+                    label: {
+                        connectorAllowed: false
+                    },
+                    marker: {
+                        enabled: true,
+                        symbol: 'circle'
                     }
                 }
+            },
+
+            series: data.series, // Mengambil series dari backend
+
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
             }
-        },
-        series: [{
-            name: 'Kegiatan',
-            data: lessSurat.map((v, i) => {
-                return {
-                    y: parseInt(v.jumlah_surat),
-                    color: '#d62728'
-                }
-            }),
-        }]
+        });
+    }
+
+    var mostSurat = []
+    var lessSurat = []
+
+    function fetchDataMostSuratDosen(startDate, endDate, prodi) {
+        return fetch(`http://localhost:8080/user/surat-dosen?type=most&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null; // Mengembalikan null jika ada error
+            });
+    }
+
+    function fetchDataLessSuratDosen(startDate, endDate, prodi) {
+        return fetch(`http://localhost:8080/user/surat-dosen?type=less&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null; // Mengembalikan null jika ada error
+            });
+    }
+    fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
+        renderMostChart(data);
     });
+    fetchDataLessSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
+        renderLessChart(data);
+    });
+
+    function renderMostChart(data) {
+        // Most Lecture
+        Highcharts.chart('bar-container', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Dosen Dengan Kegiatan Terbanyak'
+            },
+            xAxis: {
+                categories: data.map((v, i) => {
+                    return v.nama_dosen
+                }),
+                plotLines: [{
+                    color: '#000000',
+                    width: 1,
+                    value: 4.5 // Garis berada di atas kategori pertama
+                }]
+            },
+            yAxis: {
+                allowDecimals: false,
+                min: 0,
+                title: {
+                    text: ''
+                }
+
+            },
+            legend: {
+                enabled: false,
+                reversed: true
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: false,
+                        style: {
+                            color: '#FFFFFF'
+                        }
+                    }
+                }
+            },
+            series: [{
+                name: 'Kegiatan',
+                data: data.map((v, i) => {
+                    return parseInt(v.jumlah_surat)
+                }),
+            }]
+        });
+    }
+
+    function renderLessChart(data) {
+        Highcharts.chart('bar-container-2', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Dosen Dengan Kegiatan Sedikit'
+            },
+            xAxis: {
+                categories: data.map((v, i) => {
+                    return v.nama_dosen
+                }),
+                plotLines: [{
+                    color: '#000000',
+                    width: 1,
+                    value: 4.5 // Garis berada di atas kategori pertama
+                }]
+            },
+            yAxis: {
+                allowDecimals: false,
+                min: 0,
+                title: {
+                    text: ''
+                }
+
+            },
+            legend: {
+                enabled: false,
+                reversed: true
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: false,
+                        style: {
+                            color: '#FFFFFF'
+                        }
+                    }
+                }
+            },
+            series: [{
+                name: 'Kegiatan',
+                data: data.map((v, i) => {
+                    return {
+                        y: parseInt(v.jumlah_surat),
+                        color: '#d62728'
+                    }
+                }),
+            }]
+        });
+    }
 </script>
-
-
-
-
-
 
 <?= $this->endSection(); ?>
