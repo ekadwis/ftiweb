@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 
+<?php if (session()->getFlashdata('msg-success')) : ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('msg-success'); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
 <div class="container">
 
     <div class="d-flex justify-content-between mt-3">

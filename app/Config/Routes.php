@@ -34,7 +34,7 @@ $routes->group('admin', ['filter' => 'role:administrator'], function ($routes) {
     $routes->get('revisi_pengajuan_surat/(:any)', 'AdminController::revisi_pengajuan_surat/$1');
     $routes->get('detail_permohonan_ttd/(:any)', 'AdminController::detail_permohonan_ttd/$1');
     $routes->post('edit_permohonan_ttd', 'AdminController::edit_permohonan_ttd');
-    $routes->get('approved_permohonan_ttd/(:any)', 'AdminController::approved_permohonan_ttd/$1');
+    $routes->post('approved_permohonan_ttd', 'AdminController::approved_permohonan_ttd');
     $routes->post('submit_revisi_pengajuan_surat', 'AdminController::submit_revisi_pengajuan_surat');
     $routes->post('surat_masuk_keputusan', 'AdminController::surat_masuk_keputusan');
     $routes->post('surat_masuk_tugas', 'AdminController::surat_masuk_tugas');

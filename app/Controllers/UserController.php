@@ -94,8 +94,6 @@ class UserController extends BaseController
             'nama_dosen' => $this->request->getVar('nama_dosen'),
             'nik_dosen' => $this->request->getVar('nik_dosen'),
             'prodi_dosen' => $this->request->getVar('prodi_dosen'),
-            'no_telp_dosen' => $this->request->getVar('no_telp_dosen'),
-            'email_dosen' => $this->request->getVar('email_dosen'),
         ];
 
         $this->DosenModel->insert($data);

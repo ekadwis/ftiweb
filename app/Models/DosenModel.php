@@ -12,7 +12,7 @@ class DosenModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['nama_dosen', 'nik_dosen', 'prodi_dosen', 'no_telp_dosen', 'email_dosen'];
+    protected $allowedFields    = ['nama_dosen', 'nik_dosen', 'prodi_dosen'];
 
     protected bool $allowEmptyInserts = false;
 

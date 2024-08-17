@@ -132,7 +132,7 @@ class AdminController extends BaseController
 
         $this->ProfileModel->save($data);
 
-        return redirect()->to('/admin/profiladministrator');
+        return redirect()->to('/admin/profiladministrator')->with('msg-success', 'Profil berhasil diubah.');
     }
 
     public function deleteuser($user_id)
@@ -197,7 +197,7 @@ class AdminController extends BaseController
             status = 'Revisi'
         WHERE kode_surat = $kode_surat");
 
-        return redirect()->to('/admin/pengajuansurat');
+        return redirect()->to('/admin/pengajuansurat')->with('msg-success', 'Revisi berhasil di submit.');
     }
 
     public function approved_pengajuan_surat($id_surat)
@@ -237,7 +237,7 @@ class AdminController extends BaseController
         $this->SuratModel->where(array('kode_surat' => $kode_surat))->delete();
 
 
-        return redirect()->to('/admin/pengajuansurat');
+        return redirect()->to('/admin/pengajuansurat')->with('msg-success', 'Aproval berhasil.');
     }
 
     public function detail_permohonan_ttd($id_permohonan)
@@ -299,14 +299,45 @@ class AdminController extends BaseController
 
 
 
-        return redirect()->to('/admin/permohonanttd');
+        return redirect()->to('/admin/permohonanttd')->with('msg-success', 'Edit berhasil.');
     }
 
-    public function approved_permohonan_ttd($id_permohonan)
+    public function approved_permohonan_ttd()
     {
+        $id_permohonan = $this->request->getVar('id_permohonan');
+        $file = $this->request->getFile('lampiran');
+        $lampiran_path = null;
+    
+        if ($file->isValid() && !$file->hasMoved()) {
+            // Generate random 32 characters filename
+            $newFileName = bin2hex(random_bytes(16)) . '.' . $file->getExtension();
+    
+            // Define the path to save the file
+            $path = WRITEPATH . 'uploads/lampiran_files/';
+    
+            // Make sure directory exists
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+    
+            // Check for existing file and delete if it exists
+            foreach ($this->PermohonanTtdModel->where('id_permohonan', $id_permohonan)->findAll() as $data) {
+                $existingFile = $data['lampiran'];
+                if (!empty($existingFile) && file_exists($path . $existingFile)) {
+                    unlink($path . $existingFile);
+                }
+            }
+    
+            // Move the file to the new location
+            $file->move($path, $newFileName);
+    
+            // Get the file name only (without path)
+            $lampiran_path = $newFileName;
+        }
+    
         $kode_surat = $this->PermohonanTtdModel->getKodeSurat($id_permohonan);
         $result = $this->PermohonanTtdModel->where('kode_surat', $kode_surat)->findAll();
-
+    
         foreach ($result as $data) {
             // Sesuaikan dengan struktur tabel permohonan_ttd
             $this->ArsipSuratModel->insert([
@@ -328,18 +359,19 @@ class AdminController extends BaseController
                 'sifat' => $data['sifat'],
                 'tembusan' => $data['tembusan'],
                 'catatan' => $data['catatan'],
-                'lampiran' => $data['lampiran'],
+                'lampiran' => $lampiran_path,
                 'no_urut' => $data['no_urut'],
                 'status' => 'Download',
                 'revisi' => $data['revisi'],
                 'author' => user()->nama_user,
             ]);
         }
-
+    
         $this->PermohonanTtdModel->where(array('kode_surat' => $kode_surat))->delete();
-
-        return redirect()->to('admin/arsipsurat');
+    
+        return redirect()->to('admin/permohonanttd')->with('msg-success', 'Surat berhasil terkirim, hasil akan berada di Arsip.');
     }
+    
 
 
     public function surat_masuk_keputusan()
@@ -408,7 +440,7 @@ class AdminController extends BaseController
             }
         }
 
-        return redirect()->to('admin/arsipsurat');
+        return redirect()->to('admin/arsipsurat')->with('msg-success', 'Berhasil menginput surat keputusan baru.');
     }
 
     public function surat_masuk_tugas()
@@ -477,6 +509,6 @@ class AdminController extends BaseController
             }
         }
 
-        return redirect()->to('admin/arsipsurat');
+        return redirect()->to('admin/arsipsurat')->with('msg-success', 'Berhasil menginput surat tugas baru.');
     }
 }

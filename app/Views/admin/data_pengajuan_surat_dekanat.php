@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 
+<?php if (session()->getFlashdata('msg-success')) : ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('msg-success'); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
 <h2 class="my-5 fw-bold">Data Pengajuan Surat Dekanat</h2>
 <!-- Table  -->
 <table id="example" class="display" style="width:100%;">

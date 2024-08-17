@@ -44,14 +44,6 @@
                         <label for="prodi_dosen" class="form-label">Prodi</label>
                         <input type="text" class="form-control" id="prodi_dosen" aria-describedby="emailHelp" name="prodi_dosen" placeholder="Masukan prodi" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="no_telp_dosen" class="form-label">Nomor Telepon Dosen</label>
-                        <input type="number" class="form-control" id="no_telp_dosen" aria-describedby="emailHelp" name="no_telp_dosen" placeholder="Masukan nomor telepon dosen" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email_dosen" class="form-label">Email Dosen</label>
-                        <input type="email" class="form-control" id="email_dosen" aria-describedby="emailHelp" name="email_dosen" placeholder="Masukan email dosen" required>
-                    </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Tambah</button>
                     </div>
@@ -69,8 +61,6 @@
             <th>Nama Dosen</th>
             <th>NIK</th>
             <th>Prodi</th>
-            <th>Nomor Telepon</th>
-            <th>Email</th>
         </tr>
     </thead>
     <tbody>
@@ -82,8 +72,6 @@
                 <td><?= $dsn['nama_dosen']; ?></td>
                 <td><?= $dsn['nik_dosen']; ?></td>
                 <td><?= $dsn['prodi_dosen']; ?></td>
-                <td><?= $dsn['no_telp_dosen']; ?></td>
-                <td><?= $dsn['email_dosen']; ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
