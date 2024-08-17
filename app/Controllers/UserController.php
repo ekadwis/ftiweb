@@ -73,10 +73,15 @@ class UserController extends BaseController
     {
         $request = \Config\Services::request();
         $section = $request->getVar('section');
-        $data['prodi'] = $this->ArsipModel->distinct()->findColumn('prodi');
-        $data['detail'] =  $this->ArsipModel->findBySection($section);;
+        $data['dosen'] = $this->ArsipModel
+            ->distinct()
+            ->select('nama_dosen')
+            ->like('perihal', $section)
+            ->findColumn('nama_dosen');
+        $data['detail'] =  $this->ArsipModel->findBySection($section);
+        $data['detail_page'] =  $section;
 
-        if (! $data['detail']) {
+        if (!$data['detail']) {
             return view('not_found');
         }
 
@@ -137,6 +142,46 @@ class UserController extends BaseController
         $prodi = $request->getVar('prodi');
 
         $data = $this->ArsipModel->getSuratDosen($type, $startDate, $endDate, $prodi);
+
+        return $this->response->setJSON($data);
+    }
+
+    public function bebanKerjaDetail()
+    {
+        $request = \Config\Services::request();
+        $section = $request->getVar('section');
+        $startDate = $request->getVar('startDate');
+        $endDate = $request->getVar('endDate');
+        $dosen = $request->getVar('dosen');
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen);
+
+        return $this->response->setJSON($data);
+    }
+    public function publikasiKerjaDetail()
+    {
+        $request = \Config\Services::request();
+        $section = $request->getVar('section');
+        $startDate = $request->getVar('startDate');
+        $endDate = $request->getVar('endDate');
+        $dosen = $request->getVar('dosen');
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen);
+
+        return $this->response->setJSON($data);
+    }
+    public function chartDetail()
+    {
+        $request = \Config\Services::request();
+        $section = $request->getVar('section');
+        $startDate = $request->getVar('startDate');
+        $endDate = $request->getVar('endDate');
+        $dosen = $request->getVar('dosen');
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->chartDetailSurat($section, $startDate, $endDate, $prodi, $dosen);
 
         return $this->response->setJSON($data);
     }

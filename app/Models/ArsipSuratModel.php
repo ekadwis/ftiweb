@@ -93,7 +93,7 @@ class ArsipSuratModel extends Model
     public function findBySection($section)
     {
         return $this->select('arsip_surat.perihal, arsip_surat.nama_dosen, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
-            ->where('arsip_surat.perihal =', $section)
+            ->like('arsip_surat.perihal', $section)
             ->findAll();
     }
 
@@ -118,6 +118,10 @@ class ArsipSuratModel extends Model
                 $key = 'Penelitian';
             } elseif (stripos($item['perihal'], 'Pengabdian') !== false) {
                 $key = 'Pengabdian';
+            } elseif (stripos($item['perihal'], 'Pengajaran') !== false) {
+                $key = 'Pengajaran';
+            } elseif (stripos($item['perihal'], 'Penunjang') !== false) {
+                $key = 'Penunjang';
             } else {
                 $key = 'Lainnya';
             }
@@ -142,6 +146,70 @@ class ArsipSuratModel extends Model
                 'data' => array_values($data)
             ];
         }
+        if (empty($series)) {
+            $series[] = [
+                'name' => 'No Data',
+                'data' => array_fill(0, count($categories), 0)
+            ];
+        }
+
+        return [
+            'series' => $series,
+            'categories' => $categories
+        ];
+    }
+    public function getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen)
+    {
+        return $this->select('arsip_surat.perihal, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat')
+            ->like('arsip_surat.perihal', $section)
+            ->where('arsip_surat.periode_awal >=', $startDate)
+            ->where('arsip_surat.periode_akhir <=', $endDate)
+            ->where('arsip_surat.prodi =', $prodi)
+            ->where('arsip_surat.nama_dosen =', $dosen)
+            ->findAll();
+    }
+
+    public function chartDetailSurat($section, $startDate, $endDate, $prodi, $dosen)
+    {
+        $datas = $this->getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen);
+        $categories = [];
+
+        $startYear = date('Y', strtotime($startDate));
+        $endYear = date('Y', strtotime($endDate));
+
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            $categories[] = $year . '/' . ($year + 1) . ' <br> Gasal';
+            $categories[] = $year . '/' . ($year + 1) . ' <br> Genap';
+        }
+
+        $categoriesMap = array_fill_keys($categories, 0);
+
+        $seriesData = [];
+
+        foreach ($datas as $item) {
+            $perihal = $item['perihal'];
+
+            if (!isset($seriesData[$perihal])) {
+                $seriesData[$perihal] = $categoriesMap;
+            }
+
+            $periode = date('Y', strtotime($item['periode_awal'])) . '/' . (date('Y', strtotime($item['periode_awal'])) + 1);
+            $semester = (date('m', strtotime($item['periode_awal'])) <= 6) ? 'Genap' : 'Gasal';
+            $category = $periode . ' <br> ' . $semester;
+
+            if (isset($seriesData[$perihal][$category])) {
+                $seriesData[$perihal][$category] += (int) $item['jumlah_surat'];
+            }
+        }
+
+        $series = [];
+        foreach ($seriesData as $perihal => $data) {
+            $series[] = [
+                'name' => $perihal,
+                'data' => array_values($data)
+            ];
+        }
+
         if (empty($series)) {
             $series[] = [
                 'name' => 'No Data',

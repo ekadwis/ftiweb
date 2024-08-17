@@ -120,7 +120,7 @@
         });
         fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
             console.log(data, 'DATA ININI');
-            
+
             renderMostChart(data);
         });
         fetchDataLessSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
@@ -151,6 +151,10 @@
                 key = 'Penelitian';
             } else if (item.perihal.includes('Pengabdian')) {
                 key = 'Pengabdian';
+            } else if (item.perihal.includes('Pengajaran')) {
+                key = 'Pengabdian';
+            } else if (item.perihal.includes('Penunjang')) {
+                key = 'Penunjang';
             } else {
                 key = 'Lainnya'; // Untuk perihal yang tidak termasuk penelitian atau pengabdian
             }
@@ -194,6 +198,9 @@
                 detailButton.href = `/user/detail?section=${data.perihal}`;
                 detailButton.className = 'btn btn-dark btn-sm';
                 detailButton.textContent = 'Detail';
+                if (data.perihal === "Penunjang") {
+                    detailButton.style.display = 'none';
+                }
 
                 const textCenterDiv = document.createElement('div');
                 textCenterDiv.className = 'text-center';
