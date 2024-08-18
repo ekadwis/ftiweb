@@ -94,23 +94,18 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Dapatkan parameter 'section' dari URL
         const urlParams = new URLSearchParams(window.location.search);
         const section = urlParams.get('section');
 
-        // Cari radio button yang sesuai dengan nilai 'section' dari URL
         if (section) {
             const radioButton = document.querySelector(`input[value="${section}"]`);
             if (radioButton) {
-                radioButton.checked = true; // Pilih radio button
+                radioButton.checked = true;
             }
         }
-
-        // Tambahkan event listener pada radio button
         document.querySelectorAll('input[name="flexRadioDefault"]').forEach(function(radio) {
             radio.addEventListener('change', function() {
                 const selectedSection = this.value;
-                // Redirect ke URL baru saat radio button diubah
                 window.location.href = `http://localhost:8080/user/detail?section=${selectedSection}`;
             });
         });
@@ -141,7 +136,7 @@
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
-                return null; // Mengembalikan null jika ada error
+                return null;
             });
     }
 
@@ -156,7 +151,7 @@
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
-                return null; // Mengembalikan null jika ada error
+                return null;
             });
     }
     fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi", selectedDosen).then(data => {
@@ -165,13 +160,11 @@
 </script>
 <script>
     for (let year = startYear; year <= currentYear; year++) {
-        // Start Year Options
         const optionStart = document.createElement("option");
         optionStart.value = year;
         optionStart.textContent = year;
         selectStartYear.appendChild(optionStart);
 
-        // End Year Options
         const optionEnd = document.createElement("option");
         optionEnd.value = year;
         optionEnd.textContent = year;
@@ -184,19 +177,16 @@
     function updateEndYearOptions() {
         const startYearValue = parseInt(selectStartYear.value, 10);
 
-        // Enable all options in selectEndYear first
         Array.from(selectEndYear.options).forEach(option => {
             option.disabled = false;
         });
 
-        // Disable options less than the selected startYear
         Array.from(selectEndYear.options).forEach(option => {
             if (parseInt(option.value, 10) < startYearValue) {
                 option.disabled = true;
             }
         });
 
-        // If the current end year is less than the selected start year, update it
         if (parseInt(selectEndYear.value, 10) < startYearValue) {
             selectEndYear.value = startYearValue;
         }
@@ -246,26 +236,22 @@
         });
     }
 
-    // Initialize end year options on page load
     updateEndYearOptions();
 </script>
 <script>
     const tableBody = document.getElementById("table-kegiatan");
 
     function bebanKerjaChart(data) {
-        // Filter data untuk mengecek apakah semuanya kosong atau tidak valid
         const validData = data.filter(item => item.perihal !== null && item.jumlah_surat !== "0");
 
         let chartData;
 
         if (validData.length === 0) {
-            // Jika tidak ada data valid, tampilkan "No Data"
             chartData = [{
                 name: "No Data",
                 y: 0
             }];
         } else {
-            // Konversi data API ke format yang sesuai untuk Highcharts
             chartData = validData.map(item => ({
                 name: item.perihal,
                 y: parseInt(item.jumlah_surat)
@@ -315,19 +301,17 @@
                 name: "Total",
                 colorByPoint: true,
                 innerSize: '75%',
-                data: chartData // Data dari API yang sudah diolah
+                data: chartData
             }]
         });
     }
 
     function publikasiChart(data) {
-        // Filter data untuk mengecek apakah semuanya kosong atau tidak valid
         const validData = data.filter(item => item.perihal !== null && item.jumlah_surat !== "0");
 
         let groupedData = {};
 
         if (validData.length === 0) {
-            // Jika tidak ada data valid, tampilkan "No Data"
             groupedData = {
                 "No Data": 0
             };
@@ -337,7 +321,7 @@
                     perihal,
                     jumlah_surat
                 } = item;
-                let groupName = "Lainnya"; // Default group jika tidak ada kata "Internasional" atau "Nasional"
+                let groupName = "Lainnya";
 
                 if (perihal.toLowerCase().includes("internasional")) {
                     groupName = "Internasional";
@@ -345,7 +329,6 @@
                     groupName = "Nasional";
                 }
 
-                // Tambahkan jumlah surat ke dalam kelompok yang sesuai
                 if (!acc[groupName]) {
                     acc[groupName] = 0;
                 }
@@ -355,7 +338,6 @@
             }, {});
         }
 
-        // Konversi groupedData ke format yang sesuai untuk Highcharts
         const chartData = Object.keys(groupedData).map(groupName => ({
             name: groupName,
             y: groupedData[groupName]
@@ -404,21 +386,18 @@
                 name: "Total",
                 colorByPoint: true,
                 innerSize: '75%',
-                data: chartData // Data yang sudah dikelompokkan
+                data: chartData
             }]
         });
     }
 
 
     function populateTable(data) {
-        // Bersihkan isi tabel terlebih dahulu untuk menghindari duplikasi
         tableBody.innerHTML = '';
 
-        // Filter data untuk mengecek apakah semuanya kosong atau tidak valid
         const validData = data.filter(item => item.kegiatan_keperluan !== null && item.periode_awal !== null && item.periode_akhir !== null);
 
         if (validData.length === 0) {
-            // Jika tidak ada data valid, tampilkan "No Data"
             const row = document.createElement('tr');
             row.innerHTML = `
             <td colspan="4" style="text-align: center;">No Data</td>
@@ -428,21 +407,17 @@
             validData.forEach((item, index) => {
                 const row = document.createElement('tr');
 
-                // Tambahkan data ke dalam row
                 row.innerHTML = `
                 <th scope="row">${index + 1}</th>
                 <td>${item.kegiatan_keperluan || 'No Data'}</td>
                 <td>${formatDate(item.periode_awal) || 'No Data'}</td>
                 <td>${formatDate(item.periode_akhir) || 'No Data'}</td>
             `;
-
-                // Tambahkan row ke dalam tbody
                 tableBody.appendChild(row);
             });
         }
     }
 
-    // Line Chart
 
     function renderChart(data) {
         Highcharts.chart('line-container', {
@@ -459,12 +434,12 @@
             },
 
             xAxis: {
-                categories: data.categories, // Menggunakan categories dari PHP
+                categories: data.categories,
                 labels: {
                     useHTML: true,
                     style: {
-                        fontWeight: 'bold', // Membuat teks bold
-                        textAlign: 'center' // Memusatkan teks
+                        fontWeight: 'bold',
+                        textAlign: 'center'
                     }
                 },
                 accessibility: {
@@ -491,7 +466,7 @@
                 }
             },
 
-            series: data.series, // Menggunakan series dari PHP
+            series: data.series,
 
             responsive: {
                 rules: [{

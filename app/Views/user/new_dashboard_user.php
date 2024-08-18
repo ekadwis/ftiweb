@@ -7,10 +7,15 @@
             <div class="fs-5 fw-bold">Program Studi</div>
             <div>
                 <select id="prodiSelect" class="form-select form-select-sm" aria-label="Default select example">
-                    <?php foreach ($prodi as $index => $data): ?>
-                        <option value="<?= $data; ?>" <?= $data == 0 ? 'selected' : ''; ?>><?= $data; ?></option>
-                    <?php endforeach; ?>
+                    <?php if (empty($prodi)): ?>
+                        <option value=""><?= 'Tidak ada data'; ?></option>
+                    <?php else: ?>
+                        <?php foreach ($prodi as $index => $data): ?>
+                            <option value="<?= $data; ?>" <?= $data == 0 ? 'selected' : ''; ?>><?= $data; ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
+
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -55,13 +60,11 @@
     const selectEndYear = document.getElementById("selectEndYear");
 
     for (let year = startYear; year <= currentYear; year++) {
-        // Start Year Options
         const optionStart = document.createElement("option");
         optionStart.value = year;
         optionStart.textContent = year;
         selectStartYear.appendChild(optionStart);
 
-        // End Year Options
         const optionEnd = document.createElement("option");
         optionEnd.value = year;
         optionEnd.textContent = year;
@@ -91,19 +94,15 @@
     function updateEndYearOptions() {
         const startYearValue = parseInt(selectStartYear.value, 10);
 
-        // Enable all options in selectEndYear first
         Array.from(selectEndYear.options).forEach(option => {
             option.disabled = false;
         });
-
-        // Disable options less than the selected startYear
         Array.from(selectEndYear.options).forEach(option => {
             if (parseInt(option.value, 10) < startYearValue) {
                 option.disabled = true;
             }
         });
 
-        // If the current end year is less than the selected start year, update it
         if (parseInt(selectEndYear.value, 10) < startYearValue) {
             selectEndYear.value = startYearValue;
         }
@@ -135,7 +134,6 @@
 
     selectEndYear.addEventListener("change", handleYearChange);
 
-    // Initialize end year options on page load
     updateEndYearOptions();
 </script>
 
@@ -146,7 +144,6 @@
         data.forEach(item => {
             let key;
 
-            // Mencari kata kunci "Penelitian" atau "Pengabdian"
             if (item.perihal.includes('Penelitian')) {
                 key = 'Penelitian';
             } else if (item.perihal.includes('Pengabdian')) {
@@ -156,10 +153,9 @@
             } else if (item.perihal.includes('Penunjang')) {
                 key = 'Penunjang';
             } else {
-                key = 'Lainnya'; // Untuk perihal yang tidak termasuk penelitian atau pengabdian
+                key = 'Lainnya';
             }
 
-            // Menggabungkan data dengan kategori yang sesuai
             let found = groupedSurat.find(group => group.perihal === key);
 
             if (!found) {
@@ -175,12 +171,10 @@
         });
 
         const container = document.querySelector('.card-surat');
-        container.innerHTML = ""; // Menghapus konten yang ada di dalam container
+        container.innerHTML = "";
 
-        // Mencetak hasil ke dalam elemen HTML
         if (groupedSurat.length > 0) {
             groupedSurat.forEach(data => {
-                // Buat elemen card secara dinamis
                 const card = document.createElement('div');
                 card.className = 'card col';
 
@@ -213,7 +207,6 @@
                 jumlahDosen.className = 'card-text fw-normal fs-5';
                 jumlahDosen.textContent = `${data.jumlah_dosen} Dosen`;
 
-                // Susun elemen
                 headerDiv.appendChild(title);
                 headerDiv.appendChild(detailButton);
                 cardBody.appendChild(headerDiv);
@@ -222,7 +215,6 @@
                 cardBody.appendChild(textCenterDiv);
                 card.appendChild(cardBody);
 
-                // Masukkan card ke dalam container
                 container.appendChild(card);
             });
         } else {
@@ -244,7 +236,7 @@
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
-                return null; // Mengembalikan null jika ada error
+                return null;
             });
     }
 
@@ -253,12 +245,11 @@
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
-                return null; // Mengembalikan null jika ada error
+                return null;
             });
     }
 
 
-    // Render Chart
     function renderChart(data) {
 
         if (!data) {
@@ -279,7 +270,7 @@
             },
 
             xAxis: {
-                categories: data.categories, // Mengambil categories dari backend
+                categories: data.categories,
                 labels: {
                     useHTML: true,
                     style: {
@@ -311,7 +302,7 @@
                 }
             },
 
-            series: data.series, // Mengambil series dari backend
+            series: data.series,
 
             responsive: {
                 rules: [{
@@ -338,7 +329,7 @@
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
-                return null; // Mengembalikan null jika ada error
+                return null;
             });
     }
 
@@ -347,7 +338,7 @@
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
-                return null; // Mengembalikan null jika ada error
+                return null;
             });
     }
     fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
@@ -358,7 +349,6 @@
     });
 
     function renderMostChart(data) {
-        // Most Lecture
         Highcharts.chart('bar-container', {
             chart: {
                 type: 'bar'
@@ -373,7 +363,7 @@
                 plotLines: [{
                     color: '#000000',
                     width: 1,
-                    value: 4.5 // Garis berada di atas kategori pertama
+                    value: 4.5
                 }]
             },
             yAxis: {
@@ -423,7 +413,7 @@
                 plotLines: [{
                     color: '#000000',
                     width: 1,
-                    value: 4.5 // Garis berada di atas kategori pertama
+                    value: 4.5
                 }]
             },
             yAxis: {
