@@ -192,7 +192,7 @@
                 detailButton.href = `/user/detail?section=${data.perihal}`;
                 detailButton.className = 'btn btn-dark btn-sm';
                 detailButton.textContent = 'Detail';
-                if (data.perihal === "Penunjang") {
+                if (data.perihal === "Pengajaran") {
                     detailButton.style.display = 'none';
                 }
 

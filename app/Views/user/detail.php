@@ -2,7 +2,6 @@
 
 <?= $this->section('content') ?>
 
-
 <div class="row mt-5">
     <h2 class="fw-bold">Detail <?= $detail_page ?> Dosen</h2>
     <div class="d-flex gap-5">
@@ -19,10 +18,7 @@
             <div class="fs-5 fw-bold">Nama</div>
             <div>
                 <select id="dosenSelect" class="form-select form-select-sm" aria-label="Default select example">
-
-                    <?php foreach ($dosen as $data): ?>
-                        <option value="<?= $data; ?>"><?= $data; ?></option>
-                    <?php endforeach; ?>
+                    <!-- Options akan dirender dengan JavaScript -->
                 </select>
             </div>
         </div>
@@ -49,9 +45,9 @@
     <div>
         <div class="fw-bold fs-5 mb-3">Jenis Beban</div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Pengajaran">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Penunjang">
             <label class="form-check-label" for="flexRadioDefault1">
-                Pengajaran
+                Penunjang
             </label>
         </div>
         <div class="form-check">
@@ -92,6 +88,49 @@
 </div>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script>
+    function renderSelectProdi(prodiList) {
+        const selectElement = document.getElementById('dosenSelect');
+        selectElement.innerHTML = ''; // Hapus opsi lama
+
+        if (prodiList.length === 0) {
+            // Jika tidak ada data
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Tidak ada data';
+            selectElement.appendChild(option);
+        } else {
+            // Jika ada data, loop dan tambahkan opsi
+            prodiList.forEach((data, index) => {
+                const option = document.createElement('option');
+                option.value = data.nama_dosen;
+                option.textContent = data.nama_dosen;
+                if (index === 0) {
+                    option.selected = true; // Set opsi pertama sebagai selected
+                }
+                selectElement.appendChild(option);
+            });
+        }
+    }
+
+    // Fungsi untuk fetch data dosen berdasarkan prodi
+    function fetchDataDosen(prodi) {
+        return fetch(`http://localhost:8080/user/dosen-detail?prodi=${encodeURIComponent(prodi)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null;
+            });
+    }
+
+    // Render select dengan data prodi dari server
+    fetchDataDosen("Sistem Informasi").then(data => {
+        if (data) {
+            renderSelectProdi(data);
+        }
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -114,7 +153,7 @@
     var currentYear = new Date().getFullYear();
     var startYear = 2020;
     var selectedProdi = "Sistem Informasi"
-    var selectedDosen = "<?= $dosen[0] ?>";
+    var selectedDosen = "<?= $dosen_prodi[0]; ?>"
 
     const selectStartYear = document.getElementById("selectStartYear");
     const selectEndYear = document.getElementById("selectEndYear");
@@ -201,13 +240,21 @@
     document.getElementById('prodiSelect').addEventListener('change', (event) => {
         selectedProdi = event.target.value;
 
-        fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-            bebanKerjaChart(data)
-            publikasiChart(data)
-            populateTable(data)
-        });
-        fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-            renderChart(data);
+        // Fetch data dosen terlebih dahulu dan update selectedDosen
+        fetchDataDosen(selectedProdi).then(data => {
+            renderSelectProdi(data);
+            selectedDosen = data[0].nama_dosen;
+
+            // Setelah selectedDosen diperbarui, lakukan fetch ke API lain
+            fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+                bebanKerjaChart(data);
+                publikasiChart(data);
+                populateTable(data);
+            });
+
+            fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+                renderChart(data);
+            });
         });
     });
     document.getElementById('dosenSelect').addEventListener('change', (event) => {
@@ -327,8 +374,11 @@
                     groupName = "Internasional";
                 } else if (perihal.toLowerCase().includes("nasional")) {
                     groupName = "Nasional";
+                } else if (perihal.toLowerCase().includes("lokal")) {
+                    groupName = "Lokal";
+                } else if (perihal.toLowerCase().includes("internal")) {
+                    groupName = "Internal";
                 }
-
                 if (!acc[groupName]) {
                     acc[groupName] = 0;
                 }

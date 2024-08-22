@@ -96,6 +96,13 @@ class ArsipSuratModel extends Model
             ->like('arsip_surat.perihal', $section)
             ->findAll();
     }
+    public function findDosenByProdi($prodi)
+    {
+        return $this->select('arsip_surat.nama_dosen')
+            ->where('arsip_surat.prodi', $prodi)
+            ->groupBy('arsip_surat.id_dosen')
+            ->findAll();
+    }
 
     public function chartSurat($startDate, $endDate, $prodi)
     {

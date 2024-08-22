@@ -73,9 +73,11 @@ class UserController extends BaseController
     {
         $request = \Config\Services::request();
         $section = $request->getVar('section');
-        $data['dosen'] = $this->ArsipModel
+        $prodi = $request->getVar('prodi');
+        $data['dosen_prodi'] =  $this->ArsipModel
             ->distinct()
             ->select('nama_dosen')
+            ->where('arsip_surat.prodi', 'Sistem Informasi')
             ->like('perihal', $section)
             ->findColumn('nama_dosen');
         $data['detail'] =  $this->ArsipModel->findBySection($section);
@@ -180,6 +182,15 @@ class UserController extends BaseController
         $prodi = $request->getVar('prodi');
 
         $data = $this->ArsipModel->chartDetailSurat($section, $startDate, $endDate, $prodi, $dosen);
+
+        return $this->response->setJSON($data);
+    }
+    public function dosenDetail()
+    {
+        $request = \Config\Services::request();
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->findDosenByProdi($prodi);
 
         return $this->response->setJSON($data);
     }
