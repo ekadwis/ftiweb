@@ -242,8 +242,10 @@
 
         // Fetch data dosen terlebih dahulu dan update selectedDosen
         fetchDataDosen(selectedProdi).then(data => {
-            renderSelectProdi(data);
-            selectedDosen = data[0].nama_dosen;
+            renderSelectProdi(data);     
+            if (data.length > 0) {
+                selectedDosen = data[0].nama_dosen;
+            }
 
             // Setelah selectedDosen diperbarui, lakukan fetch ke API lain
             fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {

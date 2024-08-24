@@ -82,7 +82,7 @@ class ArsipSuratModel extends Model
     }
     public function getPerihalDosen($startDate, $endDate, $prodi)
     {
-        return $this->select('*, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat, arsip_surat.periode_akhir, COUNT(id_dosen) as jumlah_dosen')
+        return $this->select('*, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat, arsip_surat.periode_akhir, COUNT(DISTINCT id_dosen) as jumlah_dosen')
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
             ->where('arsip_surat.prodi =', $prodi)

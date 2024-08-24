@@ -157,8 +157,38 @@ class UserController extends BaseController
 
         $data = $this->ArsipModel->getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen);
 
-        return $this->response->setJSON($data);
+        // Grup data berdasarkan kata kunci dan jumlahkan surat
+        $groupedData = [];
+
+        foreach ($data as $item) {
+            if (stripos($item['perihal'], 'Penelitian') !== false) {
+                $key = 'Penelitian';
+            } elseif (stripos($item['perihal'], 'Pengabdian') !== false) {
+                $key = 'Pengabdian';
+            } elseif (stripos($item['perihal'], 'Pengajaran') !== false) {
+                $key = 'Pengajaran';
+            } elseif (stripos($item['perihal'], 'Penunjang') !== false) {
+                $key = 'Penunjang';
+            } else {
+                $key = 'Lainnya';
+            }
+
+            if (!isset($groupedData[$key])) {
+                $groupedData[$key] = [
+                    'perihal' => $key,
+                    'kegiatan_keperluan' => $item['kegiatan_keperluan'],
+                    'periode_awal' => $item['periode_awal'],
+                    'periode_akhir' => $item['periode_akhir'],
+                    'jumlah_surat' => (int) $item['jumlah_surat'],
+                ];
+            } else {
+                $groupedData[$key]['jumlah_surat'] += (int) $item['jumlah_surat'];
+            }
+        }
+
+        return $this->response->setJSON(array_values($groupedData));
     }
+
     public function publikasiKerjaDetail()
     {
         $request = \Config\Services::request();
