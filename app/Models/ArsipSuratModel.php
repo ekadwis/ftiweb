@@ -173,6 +173,7 @@ class ArsipSuratModel extends Model
             ->where('arsip_surat.periode_akhir <=', $endDate)
             ->where('arsip_surat.prodi =', $prodi)
             ->where('arsip_surat.nama_dosen =', $dosen)
+            ->groupBy('arsip_surat.perihal, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
             ->findAll();
     }
 

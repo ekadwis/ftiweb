@@ -77,11 +77,12 @@ class UserController extends BaseController
         $data['dosen_prodi'] =  $this->ArsipModel
             ->distinct()
             ->select('nama_dosen')
-            ->where('arsip_surat.prodi', 'Sistem Informasi')
+            ->where('arsip_surat.prodi', $prodi)
             ->like('perihal', $section)
             ->findColumn('nama_dosen');
         $data['detail'] =  $this->ArsipModel->findBySection($section);
         $data['detail_page'] =  $section;
+        $data['prodi'] =  $prodi;
 
         if (!$data['detail']) {
             return view('not_found');
@@ -157,7 +158,6 @@ class UserController extends BaseController
 
         $data = $this->ArsipModel->getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen);
 
-        // Grup data berdasarkan kata kunci dan jumlahkan surat
         $groupedData = [];
 
         foreach ($data as $item) {
@@ -221,6 +221,20 @@ class UserController extends BaseController
         $prodi = $request->getVar('prodi');
 
         $data = $this->ArsipModel->findDosenByProdi($prodi);
+
+        return $this->response->setJSON($data);
+    }
+
+    public function kegiatanData()
+    {
+        $request = \Config\Services::request();
+        $section = $request->getVar('section');
+        $startDate = $request->getVar('startDate');
+        $endDate = $request->getVar('endDate');
+        $dosen = $request->getVar('dosen');
+        $prodi = $request->getVar('prodi');
+
+        $data = $this->ArsipModel->getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen);
 
         return $this->response->setJSON($data);
     }

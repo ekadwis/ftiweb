@@ -47,6 +47,8 @@ $routes->group('user', ['filter' => 'role:user'], function ($routes) {
     $routes->get('surat-data', 'UserController::suratData');
     $routes->get('surat-dosen', 'UserController::suratDosen');
     $routes->get('surat-detail', 'UserController::bebanKerjaDetail');
+    $routes->get('publikasi-detail', 'UserController::publikasiKerjaDetail');
+    $routes->get('kegiatan-detail', 'UserController::kegiatanData');
     $routes->get('chart-detail', 'UserController::chartDetail');
     $routes->get('dosen-detail', 'UserController::dosenDetail');
     $routes->get('pengajuan_surat', 'UserController::pengajuan_surat');

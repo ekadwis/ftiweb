@@ -1,7 +1,6 @@
 <?= $this->extend('layout/template_user'); ?>
 
 <?= $this->section('content') ?>
-
 <div class="row mt-5">
     <h2 class="fw-bold">Detail <?= $detail_page ?> Dosen</h2>
     <div class="d-flex gap-5">
@@ -9,8 +8,8 @@
             <div class="fs-5 fw-bold">Program Studi</div>
             <div>
                 <select id="prodiSelect" class="form-select form-select-sm" aria-label="Default select example">
-                    <option value="Sistem Informasi">Sistem Informasi</option>
-                    <option value="Informatika">Informatika</option>
+                    <option value="Sistem Informasi" <?= ($prodi == 'Sistem Informasi') ? 'selected' : '' ?>>Sistem Informasi</option>
+                    <option value="Informatika" <?= ($prodi == 'Informatika') ? 'selected' : '' ?>>Informatika</option>
                 </select>
             </div>
         </div>
@@ -88,50 +87,14 @@
 </div>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
-
 <script>
-    function renderSelectProdi(prodiList) {
-        const selectElement = document.getElementById('dosenSelect');
-        selectElement.innerHTML = ''; // Hapus opsi lama
+    var currentYear = new Date().getFullYear();
+    var startYear = 2020;
+    var selectedProdi = "<?= $prodi; ?>"
+    var selectedDosen = "<?= isset($dosen_prodi[0]) ? $dosen_prodi[0] : ''; ?>";
 
-        if (prodiList.length === 0) {
-            // Jika tidak ada data
-            const option = document.createElement('option');
-            option.value = '';
-            option.textContent = 'Tidak ada data';
-            selectElement.appendChild(option);
-        } else {
-            // Jika ada data, loop dan tambahkan opsi
-            prodiList.forEach((data, index) => {
-                const option = document.createElement('option');
-                option.value = data.nama_dosen;
-                option.textContent = data.nama_dosen;
-                if (index === 0) {
-                    option.selected = true; // Set opsi pertama sebagai selected
-                }
-                selectElement.appendChild(option);
-            });
-        }
-    }
-
-    // Fungsi untuk fetch data dosen berdasarkan prodi
-    function fetchDataDosen(prodi) {
-        return fetch(`http://localhost:8080/user/dosen-detail?prodi=${encodeURIComponent(prodi)}`)
-            .then(response => response.json())
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                return null;
-            });
-    }
-
-    // Render select dengan data prodi dari server
-    fetchDataDosen("Sistem Informasi").then(data => {
-        if (data) {
-            renderSelectProdi(data);
-        }
-    });
-</script>
-<script>
+    const selectStartYear = document.getElementById("selectStartYear");
+    const selectEndYear = document.getElementById("selectEndYear");
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const section = urlParams.get('section');
@@ -145,18 +108,57 @@
         document.querySelectorAll('input[name="flexRadioDefault"]').forEach(function(radio) {
             radio.addEventListener('change', function() {
                 const selectedSection = this.value;
-                window.location.href = `http://localhost:8080/user/detail?section=${selectedSection}`;
+                window.location.href = `http://localhost:8080/user/detail?section=${selectedSection}&prodi=${selectedProdi}`;
             });
         });
     });
+</script>
 
-    var currentYear = new Date().getFullYear();
-    var startYear = 2020;
-    var selectedProdi = "Sistem Informasi"
-    var selectedDosen = "<?= $dosen_prodi[0]; ?>"
+<script>
+    function renderSelectProdi(prodiList) {
+        const selectElement = document.getElementById('dosenSelect');
+        selectElement.innerHTML = ''; // Hapus opsi lama
 
-    const selectStartYear = document.getElementById("selectStartYear");
-    const selectEndYear = document.getElementById("selectEndYear");
+        // Mendapatkan nilai dari PHP
+        var selectedDosen = "<?= isset($dosen_prodi[0]) ? $dosen_prodi[0] : ''; ?>";
+
+        if (prodiList.length === 0) {
+            // Jika tidak ada data
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Tidak ada data';
+            selectElement.appendChild(option);
+        } else {
+            // Jika ada data, loop dan tambahkan opsi
+            prodiList.forEach((data) => {
+                const option = document.createElement('option');
+                option.value = data.nama_dosen;
+                option.textContent = data.nama_dosen;
+                if (data.nama_dosen === selectedDosen) {
+                    option.selected = true; // Set opsi yang sesuai dengan selectedDosen sebagai selected
+                }
+                selectElement.appendChild(option);
+            });
+        }
+    }
+
+
+    // Fungsi untuk fetch data dosen berdasarkan prodi
+    function fetchDataDosen(prodi) {
+        return fetch(`http://localhost:8080/user/dosen-detail?prodi=${encodeURIComponent(prodi)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null;
+            });
+    }
+
+    // Render select dengan data prodi dari server
+    fetchDataDosen(selectedProdi).then(data => {
+        if (data) {
+            renderSelectProdi(data);
+        }
+    });
 </script>
 <!-- API FETCH -->
 <script>
@@ -179,10 +181,33 @@
             });
     }
 
-    fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi", selectedDosen).then(data => {
+    function fetchKegiatan(startDate, endDate, prodi, selectedDosen) {
+        return fetch(`http://localhost:8080/user/kegiatan-detail?section=<?= $detail_page; ?>&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}&dosen=${encodeURIComponent(selectedDosen)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null;
+            });
+    }
+
+    function fetchPublikasiApi(startDate, endDate, prodi, selectedDosen) {
+        return fetch(`http://localhost:8080/user/publikasi-detail?section=<?= $detail_page; ?>&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}&dosen=${encodeURIComponent(selectedDosen)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null;
+            });
+    }
+
+    fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
         bebanKerjaChart(data)
-        publikasiChart(data)
+    });
+    fetchKegiatan(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
         populateTable(data)
+    });
+
+    fetchPublikasiApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+        publikasiChart(data)
     });
 
     function fecthChartApi(startDate, endDate, prodi, selectedDosen) {
@@ -193,7 +218,7 @@
                 return null;
             });
     }
-    fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi", selectedDosen).then(data => {
+    fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
         renderChart(data);
     });
 </script>
@@ -242,7 +267,7 @@
 
         // Fetch data dosen terlebih dahulu dan update selectedDosen
         fetchDataDosen(selectedProdi).then(data => {
-            renderSelectProdi(data);     
+            renderSelectProdi(data);
             if (data.length > 0) {
                 selectedDosen = data[0].nama_dosen;
             }
@@ -250,8 +275,13 @@
             // Setelah selectedDosen diperbarui, lakukan fetch ke API lain
             fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
                 bebanKerjaChart(data);
-                publikasiChart(data);
-                populateTable(data);
+            });
+            fetchPublikasiApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+                publikasiChart(data)
+            });
+
+            fetchKegiatan(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+                populateTable(data)
             });
 
             fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
@@ -264,7 +294,12 @@
 
         fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
             bebanKerjaChart(data)
+        });
+        fetchPublikasiApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
             publikasiChart(data)
+        });
+
+        fetchKegiatan(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
             populateTable(data)
         });
         fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
@@ -277,7 +312,11 @@
         currentYear = selectEndYear.value;
         fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
             bebanKerjaChart(data)
+        });
+        fetchPublikasiApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
             publikasiChart(data)
+        });
+        fetchKegiatan(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
             populateTable(data)
         });
         fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
@@ -356,6 +395,8 @@
     }
 
     function publikasiChart(data) {
+        console.log(data);
+
         const validData = data.filter(item => item.perihal !== null && item.jumlah_surat !== "0");
 
         let groupedData = {};

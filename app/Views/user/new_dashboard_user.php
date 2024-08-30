@@ -189,7 +189,7 @@
                 title.textContent = data.perihal;
 
                 const detailButton = document.createElement('a');
-                detailButton.href = `/user/detail?section=${data.perihal}`;
+                detailButton.href = `/user/detail?section=${data.perihal}&prodi=${selectedProdi}`;
                 detailButton.className = 'btn btn-dark btn-sm';
                 detailButton.textContent = 'Detail';
                 if (data.perihal === "Pengajaran") {
