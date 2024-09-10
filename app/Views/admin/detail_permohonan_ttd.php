@@ -94,11 +94,11 @@
         </div>
         <div class="form-group mt-3">
             <label for="exampleFormControlTextarea1">Tembusan</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" value="<?= $result['tembusan']; ?>" disabled></textarea>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" value="<?= $result['tembusan']; ?>" disabled><?= $result['tembusan']; ?></textarea>
         </div>
         <div class="form-group my-3">
             <label for="exampleFormControlTextarea2">Catatan</label>
-            <textarea class="form-control" id="exampleFormControlTextarea2" rows="3" value="<?= $result['catatan']; ?>" disabled></textarea>
+            <textarea class="form-control" id="exampleFormControlTextarea2" rows="3" value="<?= $result['catatan']; ?>" disabled><?= $result['catatan']; ?></textarea>
         </div>
 
         <button type="submit" class="btn btn-secondary">Simpan</button>

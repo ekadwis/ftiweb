@@ -22,7 +22,7 @@
             <td><?= $i++; ?></td>
             <td><?= $user['nama_user']; ?></td>
             <td><?= $user['nik_user']; ?></td>
-            <td>Dekanat</td>
+            <td><?= $user['username']; ?></td>
             <td><a href="<?= base_url(); ?>admin/deleteuser/<?= $user['user_id']; ?>"><box-icon type='solid' name='trash-alt'></box-icon></a></td>
         </tr>
        <?php endforeach; ?>

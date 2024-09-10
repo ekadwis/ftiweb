@@ -5,7 +5,7 @@
 <div class="container">
     <form action="<?= base_url(); ?>admin/submit_revisi_pengajuan_surat" method="POST" class="border border-dark rounded px-4 pb-4 mt-4" enctype="multipart/form-data">
         <?php csrf_field(); ?>
-        <h2 class="my-3">Revisi Surat <?= $kode_surat[0]; ?></h2>
+        <h2 class="my-3">Revisi Surat</h2>
         <input type="hidden" name="kode_surat" value="<?= $kode_surat[0]; ?>">
         <div class="form-group mt-3">
             <label for="exampleFormControlTextarea1">Masukan pesan/alasan Revisi :</label>

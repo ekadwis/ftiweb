@@ -59,7 +59,7 @@
                 <td><?= $i++; ?></td>
                 <td><?= $srt['kode_surat']; ?></td>
                 <td><?= $srt['tanggal']; ?></td>
-                <td>Dekanat</td>
+                <td><?= $srt['username']; ?></td>
                 <td><?= $srt['tujuan']; ?></td>
                 <td><?= $srt['perihal']; ?></td>
                 <td class="<?php

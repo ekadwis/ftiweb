@@ -28,9 +28,9 @@
                     </div>
                     <div class="modal-body">
                         <form action="/ubahprofile" method="POST" enctype="multipart/form-data">
-                            
+
                             <input type="hidden" class="form-control" id="id" aria-describedby="emailHelp" name="id" value="<?= user()->id; ?>">
-                            
+
                             <div class="mb-3">
                                 <label for="nama_user" class="form-label">Nama Lengkap</label>
                                 <input type="text" class="form-control" id="nama_user" aria-describedby="emailHelp" name="nama_user" value="<?= user()->nama_user; ?>">
@@ -41,11 +41,22 @@
                             </div>
                             <div class="mb-3">
                                 <label for="telp_user" class="form-label">Nomor Telepon</label>
-                                <input type="text" class="form-control" id="telp_user" aria-describedby="emailHelp" name="telp_user" value="<?= user()->telp_user; ?>">
+                                <input type="number" class="form-control" id="telp_user" aria-describedby="emailHelp" name="telp_user" value="<?= user()->telp_user; ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="jeniskelamin_user" class="form-label">Jenis Kelamin</label>
-                                <input type="text" class="form-control" id="jeniskelamin_user" aria-describedby="emailHelp" name="jeniskelamin_user" value="<?= user()->jeniskelamin_user; ?>">
+                                <?php if (user()->jeniskelamin_user == "Laki-laki") : ?>
+                                    <select class="form-control form-control-sm" name="jeniskelamin_user" required>
+                                        <option value="<?= user()->jeniskelamin_user; ?>" selected><?= user()->jeniskelamin_user; ?></option>
+                                        <option value="Perempuan">Perempuan</option>
+                                    </select>
+                                 
+                                <?php else : ?>
+                                    <select class="form-control form-control-sm" name="jeniskelamin_user" required>
+                                        <option value="<?= user()->jeniskelamin_user; ?>" selected><?= user()->jeniskelamin_user; ?></option>
+                                        <option value="Laki-laki">Laki-laki</option>
+                                    </select>
+                                <?php endif; ?>
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Ubah Profile</button>

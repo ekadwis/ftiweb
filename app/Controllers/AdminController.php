@@ -129,7 +129,7 @@ class AdminController extends BaseController
             'telp_user' => $this->request->getVar('telp_user'),
             'jeniskelamin_user' => $this->request->getVar('jeniskelamin_user'),
         ];
-
+        
         $this->ProfileModel->save($data);
 
         return redirect()->to('/admin/profiladministrator')->with('msg-success', 'Profil berhasil diubah.');

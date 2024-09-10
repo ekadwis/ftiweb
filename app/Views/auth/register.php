@@ -18,7 +18,14 @@
             <?= csrf_field(); ?>
             <div class="mb-3">
                 <label for="username"><?= lang('Auth.username') ?></label>
-                <input type="text" class="form-control <?php if (session('errors.username')) : ?>is-invalid<?php endif ?>" name="username" placeholder="<?= lang('Auth.username') ?>" value="<?= old('username') ?>">
+                <select class="form-control <?php if (session('errors.username')) : ?>is-invalid<?php endif ?>" name="username">
+                    <option value="Dekan">Dekan</option>
+                    <option value="Kaprodi SI">Kaprodi SI</option>
+                    <option value="Kaprodi TI">Kaprodi TI</option>
+                    <option value="Wakil Dekan 1">Wakil Dekan 1</option>
+                    <option value="Wakil Dekan 2">Wakil Dekan 2</option>
+                    <option value="Wakil Dekan 3">Wakil Dekan 3</option>
+                </select>
             </div>
             <div class="mb-3">
                 <label for="nama_user" class="form-label">Nama Lengkap</label>
@@ -63,8 +70,8 @@
                 </select>
             </div> -->
 
-            <button type="submit" class="btn btn-primary btn-block float-end mt-3"><?=lang('Auth.register')?></button>
-            <p class="mt-5"><?=lang('Auth.alreadyRegistered')?> <a href="<?= url_to('login') ?>"><?=lang('Auth.signIn')?></a></p>
+            <button type="submit" class="btn btn-primary btn-block float-end mt-3"><?= lang('Auth.register') ?></button>
+            <p class="mt-5"><?= lang('Auth.alreadyRegistered') ?> <a href="<?= url_to('login') ?>"><?= lang('Auth.signIn') ?></a></p>
         </form>
     </div>
 

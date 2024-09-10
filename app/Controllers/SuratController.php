@@ -128,6 +128,12 @@ class SuratController extends BaseController
             $lampiran_path = $newFileName;
         }
 
+        $jenis_surat = 'Surat Keputusan';
+        $no_urut = $this->KodeSuratModel->getNoUrutByJenis($jenis_surat);
+
+        $new_no_urut = $no_urut + 1;
+        $formatted_no_urut = str_pad($new_no_urut, 3, '0', STR_PAD_LEFT);
+
         for ($i = 1; $i <= 10; $i++) {
             $id_dosen = $this->request->getVar('dosen' . $i);
 
@@ -135,12 +141,6 @@ class SuratController extends BaseController
             if (empty($id_dosen)) {
                 continue;
             }
-
-            $jenis_surat = 'Surat Keputusan';
-            $no_urut = $this->KodeSuratModel->getNoUrutByJenis($jenis_surat);
-
-            $new_no_urut = $no_urut + 1;
-            $formatted_no_urut = str_pad($new_no_urut, 3, '0', STR_PAD_LEFT);
 
             $kode_surat = $this->KodeSuratModel->getKodeSuratByJenis($jenis_surat);
 

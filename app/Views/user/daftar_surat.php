@@ -15,7 +15,6 @@
     <thead>
         <tr>
             <th>No</th>
-            <th>Kode Surat</th>
             <th>Tanggal</th>
             <th>Jenis Surat</th>
             <th>Perihal</th>
@@ -28,7 +27,6 @@
         <?php foreach ($surat as $srt) : ?>
             <tr>
                 <td><?= $i++; ?></td>
-                <td><?= $srt['kode_surat']; ?></td>
                 <td><?= $srt['tanggal']; ?></td>
                 <td><?= $srt['jenis_surat']; ?></td>
                 <td><?= $srt['perihal']; ?></td>
