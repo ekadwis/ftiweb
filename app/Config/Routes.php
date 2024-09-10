@@ -51,6 +51,7 @@ $routes->group('user', ['filter' => 'role:user'], function ($routes) {
     $routes->get('kegiatan-detail', 'UserController::kegiatanData');
     $routes->get('chart-detail', 'UserController::chartDetail');
     $routes->get('dosen-detail', 'UserController::dosenDetail');
+    $routes->get('year-detail', 'UserController::getYear');
     $routes->get('pengajuan_surat', 'UserController::pengajuan_surat');
     $routes->get('pengajuansurat_keputusan', 'UserController::pengajuansurat_keputusan');
     $routes->get('pengajuansurat_tugas', 'UserController::pengajuansurat_tugas');

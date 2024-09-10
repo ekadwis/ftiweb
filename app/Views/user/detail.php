@@ -1,15 +1,43 @@
 <?= $this->extend('layout/template_user'); ?>
 
 <?= $this->section('content') ?>
+<style>
+    .link-card {
+        transition: background-color 0.3s ease;
+    }
+
+    .link-card.active {
+        background-color: #e0e0e0;
+        /* Warna sedikit lebih gelap */
+    }
+</style>
+<?php
+// Membuat array kosong untuk menampung kelompok
+$grouped = array();
+
+// Memproses data
+foreach ($beban_group as $item) {
+    if (strpos($item['perihal'], 'Pengajaran') === false) {
+        if (strpos($item['perihal'], 'Pengabdian') !== false) {
+            $grouped['Pengabdian'] = 'Pengabdian';
+        } elseif (strpos($item['perihal'], 'Penelitian') !== false) {
+            $grouped['Penelitian'] = 'Penelitian';
+        } elseif (strpos($item['perihal'], 'Penunjang') !== false) {
+            $grouped['Penunjang'] = 'Penunjang';
+        }
+    }
+}
+?>
 <div class="row mt-5">
     <h2 class="fw-bold">Detail <?= $detail_page ?> Dosen</h2>
     <div class="d-flex gap-5">
         <div class="d-flex align-items-center gap-3">
-            <div class="fs-5 fw-bold">Program Studi</div>
+            <div class="fs-5 fw-bold">Unit</div>
             <div>
                 <select id="prodiSelect" class="form-select form-select-sm" aria-label="Default select example">
                     <option value="Sistem Informasi" <?= ($prodi == 'Sistem Informasi') ? 'selected' : '' ?>>Sistem Informasi</option>
                     <option value="Informatika" <?= ($prodi == 'Informatika') ? 'selected' : '' ?>>Informatika</option>
+                    <option value="Fakultas Teknologi Informasi" <?= ($prodi == 'Fakultas Teknologi Informasi') ? 'selected' : '' ?>>Fakultas Teknologi Informasi</option>
                 </select>
             </div>
         </div>
@@ -33,6 +61,19 @@
         </div>
     </div>
 </div>
+<div class="d-flex align-items-center gap-3 mb-4">
+    <div class="fs-5 fw-bold">Jenis Beban</div>
+    <?php foreach ($grouped as $key => $value) : ?>
+        <a href="#"
+            style="font-size: 14px;"
+            class="card px-2 py-0 link-card <?= ($value === $detail_page) ? 'active' : ''; ?>"
+            data-value="<?= $value; ?>">
+            <?= $value; ?>
+        </a>
+    <?php endforeach; ?>
+</div>
+
+
 
 <div class="row row-cols-3">
     <figure class="highcharts-figure">
@@ -41,27 +82,6 @@
     <figure class="highcharts-figure">
         <div id="public-container"></div>
     </figure>
-    <div>
-        <div class="fw-bold fs-5 mb-3">Jenis Beban</div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Penunjang">
-            <label class="form-check-label" for="flexRadioDefault1">
-                Penunjang
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Pengabdian">
-            <label class="form-check-label" for="flexRadioDefault2">
-                Pengabdian
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="Penelitian">
-            <label class="form-check-label" for="flexRadioDefault3">
-                Penelitian
-            </label>
-        </div>
-    </div>
 
 </div>
 </div>
@@ -89,25 +109,103 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
     var currentYear = new Date().getFullYear();
-    var startYear = 2020;
+    var startYear = 2016;
+    var maxEndYear = currentYear + 2;
+    const selectStartYear = document.getElementById('selectStartYear');
+    const selectEndYear = document.getElementById('selectEndYear');
+
+
+    function fecthDataYear() {
+        return fetch(`http://localhost:8080/user/year-detail`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null;
+            });
+    }
+    fecthDataYear().then(data => {
+        if (data) {
+            startYear = data.startYear;
+            maxEndYear = data.endYear;
+
+            populateYearOptions(startYear, maxEndYear);
+        }
+    });
+
+
+
+    function populateYearOptions(startYear, maxEndYear) {
+        // Kosongkan isi dropdown sebelumnya
+        selectStartYear.innerHTML = '';
+        selectEndYear.innerHTML = '';
+
+        // Loop dari startYear ke maxEndYear
+        for (let year = startYear; year <= maxEndYear; year++) {
+            // Buat opsi untuk start year
+            const optionStart = document.createElement("option");
+            optionStart.value = year;
+            optionStart.textContent = year;
+            selectStartYear.appendChild(optionStart);
+
+            // Buat opsi untuk end year
+            const optionEnd = document.createElement("option");
+            optionEnd.value = year;
+            optionEnd.textContent = year;
+            selectEndYear.appendChild(optionEnd);
+        }
+
+        // Set nilai default: startYear untuk dropdown kiri, maxEndYear untuk dropdown kanan
+        selectStartYear.value = startYear;
+        selectEndYear.value = maxEndYear; // Default dropdown end year diatur ke tahun terbesar
+
+        fecthApi(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+            bebanKerjaChart(data)
+        });
+        fetchKegiatan(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+            populateTable(data)
+        });
+
+        fetchPublikasiApi(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+            if (`<?= $detail_page ?>` !== "Penunjang") {
+                publikasiChart(data)
+            }
+        });
+        fecthChartApi(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedDosen).then(data => {
+            renderChart(data);
+        });
+    }
+
+
     var selectedProdi = "<?= $prodi; ?>"
     var selectedDosen = "<?= isset($dosen_prodi[0]) ? $dosen_prodi[0] : ''; ?>";
 
-    const selectStartYear = document.getElementById("selectStartYear");
-    const selectEndYear = document.getElementById("selectEndYear");
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const section = urlParams.get('section');
 
+        // Menandai link yang aktif berdasarkan URL parameter
         if (section) {
-            const radioButton = document.querySelector(`input[value="${section}"]`);
-            if (radioButton) {
-                radioButton.checked = true;
+            const activeCard = document.querySelector(`.link-card[data-value="${section}"]`);
+            if (activeCard) {
+                activeCard.classList.add('active');
             }
         }
-        document.querySelectorAll('input[name="flexRadioDefault"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                const selectedSection = this.value;
+
+        // Menambahkan event listener untuk mengubah background saat kartu diklik
+        document.querySelectorAll('.link-card').forEach(function(card) {
+            card.addEventListener('click', function(event) {
+                event.preventDefault(); // Menghentikan perilaku link default
+
+                // Menghapus kelas aktif dari semua kartu
+                document.querySelectorAll('.link-card').forEach(function(c) {
+                    c.classList.remove('active');
+                });
+
+                // Menandai kartu yang dipilih
+                const selectedSection = this.getAttribute('data-value');
+                this.classList.add('active');
+
+                // Arahkan ke halaman baru
                 window.location.href = `http://localhost:8080/user/detail?section=${selectedSection}&prodi=${selectedProdi}`;
             });
         });
@@ -145,7 +243,7 @@
 
     // Fungsi untuk fetch data dosen berdasarkan prodi
     function fetchDataDosen(prodi) {
-        return fetch(`http://localhost:8080/user/dosen-detail?prodi=${encodeURIComponent(prodi)}`)
+        return fetch(`http://localhost:8080/user/dosen-detail?section=<?= $detail_page; ?>&prodi=${encodeURIComponent(prodi)}`)
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -199,16 +297,6 @@
             });
     }
 
-    fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-        bebanKerjaChart(data)
-    });
-    fetchKegiatan(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-        populateTable(data)
-    });
-
-    fetchPublikasiApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-        publikasiChart(data)
-    });
 
     function fecthChartApi(startDate, endDate, prodi, selectedDosen) {
         return fetch(`http://localhost:8080/user/chart-detail?section=<?= $detail_page; ?>&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}&dosen=${encodeURIComponent(selectedDosen)}`)
@@ -218,26 +306,8 @@
                 return null;
             });
     }
-    fecthChartApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-        renderChart(data);
-    });
 </script>
 <script>
-    for (let year = startYear; year <= currentYear; year++) {
-        const optionStart = document.createElement("option");
-        optionStart.value = year;
-        optionStart.textContent = year;
-        selectStartYear.appendChild(optionStart);
-
-        const optionEnd = document.createElement("option");
-        optionEnd.value = year;
-        optionEnd.textContent = year;
-        selectEndYear.appendChild(optionEnd);
-    }
-
-    selectStartYear.value = startYear;
-    selectEndYear.value = currentYear;
-
     function updateEndYearOptions() {
         const startYearValue = parseInt(selectStartYear.value, 10);
 
@@ -545,6 +615,9 @@
                 layout: 'vertical',
                 align: 'right',
                 verticalAlign: 'middle'
+            },
+            tooltip: {
+                shared: true
             },
 
             plotOptions: {

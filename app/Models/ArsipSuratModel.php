@@ -41,7 +41,7 @@ class ArsipSuratModel extends Model
     protected $afterDelete    = [];
 
 
-    public function getSuratDosen($type, $startDate, $endDate, $prodi)
+    public function getSuratDosen($type, $startDate, $endDate, $prodi, $beban)
     {
         // Ambil NIK dari user yang sedang login
         $nikUser = user()->nik_user;
@@ -50,11 +50,12 @@ class ArsipSuratModel extends Model
         $order = ($type === 'most') ? 'DESC' : 'ASC';
 
         // Query untuk mendapatkan data dosen dengan pengurutan surat sesuai parameter
-        $query = $this->select('dosen.nama_dosen, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat')
+        $query = $this->select('dosen.nama_dosen, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat, arsip_surat.perihal')
             ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
             ->where('arsip_surat.prodi =', $prodi)
+            ->like('arsip_surat.perihal', $beban)
             ->groupBy('dosen.nama_dosen, dosen.nik_dosen')
             ->orderBy('jumlah_surat', $order)
             ->limit(5);
@@ -96,11 +97,13 @@ class ArsipSuratModel extends Model
             ->like('arsip_surat.perihal', $section)
             ->findAll();
     }
-    public function findDosenByProdi($prodi)
+    public function findDosenByProdi($prodi, $section)
     {
         return $this->select('arsip_surat.nama_dosen')
+            ->like('arsip_surat.perihal', $section)
             ->where('arsip_surat.prodi', $prodi)
             ->groupBy('arsip_surat.id_dosen')
+            ->orderBy("arsip_surat.nama_dosen")
             ->findAll();
     }
 
@@ -229,5 +232,17 @@ class ArsipSuratModel extends Model
             'series' => $series,
             'categories' => $categories
         ];
+    }
+    public function getYearFilter()
+    {
+        // Mengambil tahun terkecil dari periode_awal dan tahun terbesar dari periode_akhir
+        return $this->select('MIN(YEAR(periode_awal)) as startYear, MAX(YEAR(periode_akhir)) as endYear')
+            ->get()
+            ->getRow();
+    }
+    public function getAllGroupBeban()
+    {
+        return $this->select('arsip_surat.perihal')
+            ->findAll();
     }
 }

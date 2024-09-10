@@ -81,6 +81,7 @@ class UserController extends BaseController
             ->like('perihal', $section)
             ->findColumn('nama_dosen');
         $data['detail'] =  $this->ArsipModel->findBySection($section);
+        $data['beban_group'] =  $this->ArsipModel->getAllGroupBeban();
         $data['detail_page'] =  $section;
         $data['prodi'] =  $prodi;
 
@@ -141,8 +142,9 @@ class UserController extends BaseController
         $startDate = $request->getVar('startDate');
         $endDate = $request->getVar('endDate');
         $prodi = $request->getVar('prodi');
+        $beban = $request->getVar('beban');
 
-        $data = $this->ArsipModel->getSuratDosen($type, $startDate, $endDate, $prodi);
+        $data = $this->ArsipModel->getSuratDosen($type, $startDate, $endDate, $prodi, $beban);
 
         return $this->response->setJSON($data);
     }
@@ -219,8 +221,9 @@ class UserController extends BaseController
     {
         $request = \Config\Services::request();
         $prodi = $request->getVar('prodi');
+        $section = $request->getVar('section');
 
-        $data = $this->ArsipModel->findDosenByProdi($prodi);
+        $data = $this->ArsipModel->findDosenByProdi($prodi, $section);
 
         return $this->response->setJSON($data);
     }
@@ -235,6 +238,14 @@ class UserController extends BaseController
         $prodi = $request->getVar('prodi');
 
         $data = $this->ArsipModel->getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen);
+
+        return $this->response->setJSON($data);
+    }
+
+    public function getYear()
+    {
+
+        $data = $this->ArsipModel->getYearFilter();
 
         return $this->response->setJSON($data);
     }

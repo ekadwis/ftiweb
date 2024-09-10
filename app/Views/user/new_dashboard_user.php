@@ -38,6 +38,20 @@
         <div id="container"></div>
     </figure>
 
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="fs-5 fw-bold">Beban Kerja</div>
+        <div>
+            <select id="bebanSelect" class="form-select form-select-sm" aria-label="Default select example">
+                <option value="">Semua Kegiatan</option>
+                <option value="Pengabdian">Pengabdian</option>
+                <option value="Penelitian">Penelitian</option>
+                <option value="Penunjang">Penunjang</option>
+                <option value="Pengajaran">Pengajaran</option>
+            </select>
+
+        </div>
+    </div>
+
     <div class="d-flex justify-content-between">
         <!-- Bar Chart Most Lecture -->
         <figure class="highcharts-figure">
@@ -53,40 +67,93 @@
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script>
     var currentYear = new Date().getFullYear();
-    var startYear = 2020;
-    var selectedProdi = "Sistem Informasi"
+    var startYear = 2016;
+    var maxEndYear = currentYear + 2;
+    const selectStartYear = document.getElementById('selectStartYear');
+    const selectEndYear = document.getElementById('selectEndYear');
 
-    const selectStartYear = document.getElementById("selectStartYear");
-    const selectEndYear = document.getElementById("selectEndYear");
 
-    for (let year = startYear; year <= currentYear; year++) {
-        const optionStart = document.createElement("option");
-        optionStart.value = year;
-        optionStart.textContent = year;
-        selectStartYear.appendChild(optionStart);
-
-        const optionEnd = document.createElement("option");
-        optionEnd.value = year;
-        optionEnd.textContent = year;
-        selectEndYear.appendChild(optionEnd);
+    function fecthDataYear() {
+        return fetch(`http://localhost:8080/user/year-detail`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return null;
+            });
     }
+    fecthDataYear().then(data => {
+        if (data) {
+            startYear = data.startYear;
+            maxEndYear = data.endYear;
 
-    selectStartYear.value = startYear;
-    selectEndYear.value = currentYear;
+            populateYearOptions(startYear, maxEndYear);
+        }
+    });
+
+
+
+    function populateYearOptions(startYear, maxEndYear) {
+        // Kosongkan isi dropdown sebelumnya
+        selectStartYear.innerHTML = '';
+        selectEndYear.innerHTML = '';
+
+        // Loop dari startYear ke maxEndYear
+        for (let year = startYear; year <= maxEndYear; year++) {
+            // Buat opsi untuk start year
+            const optionStart = document.createElement("option");
+            optionStart.value = year;
+            optionStart.textContent = year;
+            selectStartYear.appendChild(optionStart);
+
+            // Buat opsi untuk end year
+            const optionEnd = document.createElement("option");
+            optionEnd.value = year;
+            optionEnd.textContent = year;
+            selectEndYear.appendChild(optionEnd);
+        }
+
+        selectStartYear.value = startYear;
+        selectEndYear.value = maxEndYear;
+
+        fetchDataMostSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
+            renderMostChart(data);
+        });
+        fetchDataLessSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
+            renderLessChart(data);
+        });
+        fetchDataFromBackend(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi).then(data => {
+            renderChart(data);
+        });
+        fecthSuratData(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi).then(data => {
+            renderSuratCards(data);
+        });
+    }
+    var selectedProdi = "Sistem Informasi"
+    var selectedBeban = ""
 
     document.getElementById('prodiSelect').addEventListener('change', (event) => {
         selectedProdi = event.target.value;
 
-        fetchDataFromBackend(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        fetchDataFromBackend(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi).then(data => {
             renderChart(data);
         });
-        fecthSuratData(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        fecthSuratData(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi).then(data => {
             renderSuratCards(data);
         });
-        fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        fetchDataMostSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
             renderMostChart(data);
         });
-        fetchDataLessSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        fetchDataLessSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
+            renderLessChart(data);
+        });
+    });
+    document.getElementById('bebanSelect').addEventListener('change', (event) => {
+        selectedBeban = event.target.value;
+
+        fetchDataMostSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
+            renderMostChart(data);
+        });
+        fetchDataLessSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
             renderLessChart(data);
         });
     });
@@ -110,19 +177,19 @@
 
     function handleYearChange() {
         startYear = selectStartYear.value;
-        currentYear = selectEndYear.value;
-        fetchDataFromBackend(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        maxEndYear = selectEndYear.value;
+        fetchDataFromBackend(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi).then(data => {
             renderChart(data);
         });
-        fecthSuratData(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        fecthSuratData(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi).then(data => {
             renderSuratCards(data);
         });
-        fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        fetchDataMostSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
             console.log(data, 'DATA ININI');
 
             renderMostChart(data);
         });
-        fetchDataLessSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi).then(data => {
+        fetchDataLessSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
             renderLessChart(data);
         });
     }
@@ -149,7 +216,7 @@
             } else if (item.perihal.includes('Pengabdian')) {
                 key = 'Pengabdian';
             } else if (item.perihal.includes('Pengajaran')) {
-                key = 'Pengabdian';
+                key = 'Pengajaran';
             } else if (item.perihal.includes('Penunjang')) {
                 key = 'Penunjang';
             } else {
@@ -159,15 +226,26 @@
             let found = groupedSurat.find(group => group.perihal === key);
 
             if (!found) {
+                // Menggunakan Set untuk memastikan nama dosen tidak terduplikat
+                const uniqueDosen = new Set([item.nama_dosen]);
+
                 groupedSurat.push({
                     perihal: key,
                     jumlah_surat: parseInt(item.jumlah_surat),
-                    jumlah_dosen: parseInt(item.jumlah_dosen)
+                    dosen: uniqueDosen
                 });
             } else {
+                // Tambahkan jumlah surat
                 found.jumlah_surat += parseInt(item.jumlah_surat);
-                found.jumlah_dosen += parseInt(item.jumlah_dosen);
+                // Tambahkan nama dosen ke dalam Set (untuk menghindari duplikasi)
+                found.dosen.add(item.nama_dosen);
             }
+        });
+
+        // Setelah semua item di proses, ubah Set dosen menjadi jumlah_dosen
+        groupedSurat.forEach(group => {
+            group.jumlah_dosen = group.dosen.size; // hitung jumlah dosen unik
+            delete group.dosen; // hapus Set dosen setelah selesai
         });
 
         const container = document.querySelector('.card-surat');
@@ -223,13 +301,8 @@
             emptyMessage.textContent = 'Data Tidak ada';
             container.appendChild(emptyMessage);
         }
+
     }
-    fetchDataFromBackend(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
-        renderChart(data);
-    });
-    fecthSuratData(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
-        renderSuratCards(data)
-    });
 
     function fecthSuratData(startDate, endDate, prodi) {
         return fetch(`http://localhost:8080/user/surat-data?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)
@@ -324,8 +397,8 @@
     var mostSurat = []
     var lessSurat = []
 
-    function fetchDataMostSuratDosen(startDate, endDate, prodi) {
-        return fetch(`http://localhost:8080/user/surat-dosen?type=most&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)
+    function fetchDataMostSuratDosen(startDate, endDate, prodi, beban) {
+        return fetch(`http://localhost:8080/user/surat-dosen?type=most&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}&beban=${encodeURIComponent(beban)}`)
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -333,20 +406,14 @@
             });
     }
 
-    function fetchDataLessSuratDosen(startDate, endDate, prodi) {
-        return fetch(`http://localhost:8080/user/surat-dosen?type=less&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)
+    function fetchDataLessSuratDosen(startDate, endDate, prodi, beban) {
+        return fetch(`http://localhost:8080/user/surat-dosen?type=less&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}&beban=${encodeURIComponent(beban)}`)
             .then(response => response.json())
             .catch(error => {
                 console.error('Error fetching data:', error);
                 return null;
             });
     }
-    fetchDataMostSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
-        renderMostChart(data);
-    });
-    fetchDataLessSuratDosen(`${startYear}-01-01`, `${currentYear}-12-31`, "Sistem Informasi").then(data => {
-        renderLessChart(data);
-    });
 
     function renderMostChart(data) {
         Highcharts.chart('bar-container', {
