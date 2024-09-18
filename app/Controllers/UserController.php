@@ -163,21 +163,25 @@ class UserController extends BaseController
         $groupedData = [];
 
         foreach ($data as $item) {
-            if (stripos($item['perihal'], 'Penelitian') !== false) {
-                $key = 'Penelitian';
-            } elseif (stripos($item['perihal'], 'Pengabdian') !== false) {
-                $key = 'Pengabdian';
-            } elseif (stripos($item['perihal'], 'Pengajaran') !== false) {
-                $key = 'Pengajaran';
-            } elseif (stripos($item['perihal'], 'Penunjang') !== false) {
-                $key = 'Penunjang';
+            if (stripos($item['publikasi'], 'Jurnal') !== false) {
+                $key = 'Jurnal';
+            } elseif (stripos($item['publikasi'], 'Prosiding') !== false) {
+                $key = 'Prosiding';
+            } elseif (stripos($item['publikasi'], 'HKI') !== false) {
+                $key = 'HKI';
+            } elseif (stripos($item['publikasi'], 'Paten') !== false) {
+                $key = 'Paten';
+            } elseif (stripos($item['publikasi'], 'Buku Ajar') !== false) {
+                $key = 'Buku Ajar';
+            } elseif (stripos($item['publikasi'], 'Buku Chapter') !== false) {
+                $key = 'Buku Chapter';
             } else {
                 $key = 'Lainnya';
             }
 
             if (!isset($groupedData[$key])) {
                 $groupedData[$key] = [
-                    'perihal' => $key,
+                    'publikasi' => $key,
                     'kegiatan_keperluan' => $item['kegiatan_keperluan'],
                     'periode_awal' => $item['periode_awal'],
                     'periode_akhir' => $item['periode_akhir'],

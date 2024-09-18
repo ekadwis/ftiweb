@@ -17,14 +17,14 @@ $grouped = array();
 
 // Memproses data
 foreach ($beban_group as $item) {
-    if (strpos($item['perihal'], 'Pengajaran') === false) {
-        if (strpos($item['perihal'], 'Pengabdian') !== false) {
-            $grouped['Pengabdian'] = 'Pengabdian';
-        } elseif (strpos($item['perihal'], 'Penelitian') !== false) {
-            $grouped['Penelitian'] = 'Penelitian';
-        } elseif (strpos($item['perihal'], 'Penunjang') !== false) {
-            $grouped['Penunjang'] = 'Penunjang';
-        }
+    if (strpos($item['perihal'], 'Pengajaran') !== false) {
+        $grouped['Pengajaran'] = 'Pengajaran';
+    } elseif (strpos($item['perihal'], 'Pengabdian') !== false) {
+        $grouped['Pengabdian'] = 'Pengabdian';
+    } elseif (strpos($item['perihal'], 'Penelitian') !== false) {
+        $grouped['Penelitian'] = 'Penelitian';
+    } elseif (strpos($item['perihal'], 'Penunjang') !== false) {
+        $grouped['Penunjang'] = 'Penunjang';
     }
 }
 ?>
@@ -92,6 +92,7 @@ foreach ($beban_group as $item) {
             <tr>
                 <th scope="col">No</th>
                 <th scope="col">Nama Kegiatan</th>
+                <th <?= ($detail_page !== 'Pengajaran') ? 'hidden' : ''; ?> scope="col">Jumlah Mata Kuliah</th>
                 <th scope="col">Periode Awal</th>
                 <th scope="col">Periode Akhir</th>
             </tr>
@@ -159,14 +160,16 @@ foreach ($beban_group as $item) {
         selectEndYear.value = maxEndYear; // Default dropdown end year diatur ke tahun terbesar
 
         fecthApi(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-            bebanKerjaChart(data)
+            if (`<?= $detail_page ?>` == "Pengabdian" || `<?= $detail_page ?>` == "Penelitian") {
+                bebanKerjaChart(data)
+            }
         });
         fetchKegiatan(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedDosen).then(data => {
             populateTable(data)
         });
 
         fetchPublikasiApi(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-            if (`<?= $detail_page ?>` !== "Penunjang") {
+            if (`<?= $detail_page ?>` == "Pengabdian" || `<?= $detail_page ?>` == "Penelitian") {
                 publikasiChart(data)
             }
         });
@@ -400,7 +403,7 @@ foreach ($beban_group as $item) {
     const tableBody = document.getElementById("table-kegiatan");
 
     function bebanKerjaChart(data) {
-        const validData = data.filter(item => item.perihal !== null && item.jumlah_surat !== "0");
+        const validData = data.filter(item => item.publikasi !== null && item.jumlah_surat !== "0");
 
         let chartData;
 
@@ -411,7 +414,7 @@ foreach ($beban_group as $item) {
             }];
         } else {
             chartData = validData.map(item => ({
-                name: item.perihal,
+                name: item.publikasi,
                 y: parseInt(item.jumlah_surat)
             }));
         }
@@ -427,7 +430,7 @@ foreach ($beban_group as $item) {
                 }
             },
             title: {
-                text: 'Beban Kerja'
+                text: 'Publikasi <?= $detail_page; ?> Dosen'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.y}</b>'
@@ -517,7 +520,7 @@ foreach ($beban_group as $item) {
                 }
             },
             title: {
-                text: 'Publikasi <?= $detail_page; ?> Dosen'
+                text: 'Tingkat Publikasi <?= $detail_page; ?> Dosen'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.y}</b>'
@@ -573,6 +576,7 @@ foreach ($beban_group as $item) {
                 row.innerHTML = `
                 <th scope="row">${index + 1}</th>
                 <td>${item.kegiatan_keperluan || 'No Data'}</td>
+                <td ${`<?= $detail_page; ?>` !== 'Pengajaran' ? 'hidden' : ''}>${item.jumlah_matkul || 'No Data'}</td>
                 <td>${formatDate(item.periode_awal) || 'No Data'}</td>
                 <td>${formatDate(item.periode_akhir) || 'No Data'}</td>
             `;

@@ -50,14 +50,14 @@ class ArsipSuratModel extends Model
         $order = ($type === 'most') ? 'DESC' : 'ASC';
 
         // Query untuk mendapatkan data dosen dengan pengurutan surat sesuai parameter
-        $query = $this->select('dosen.nama_dosen, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat, arsip_surat.perihal')
+        $query = $this->select('dosen.nama_dosen, arsip_surat.jumlah_matkul, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat, arsip_surat.perihal')
             ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
             ->where('arsip_surat.prodi =', $prodi)
             ->like('arsip_surat.perihal', $beban)
             ->groupBy('dosen.nama_dosen, dosen.nik_dosen')
-            ->orderBy('jumlah_surat', $order)
+            ->orderBy('arsip_surat.jumlah_matkul', $order)
             ->limit(5);
 
         // Jika NIK user ada, tambahkan kondisi untuk mengecualikan data yang cocok
@@ -170,13 +170,13 @@ class ArsipSuratModel extends Model
     }
     public function getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen)
     {
-        return $this->select('arsip_surat.perihal, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat')
+        return $this->select('arsip_surat.perihal, arsip_surat.kegiatan_keperluan, arsip_surat.publikasi, arsip_surat.jumlah_matkul, arsip_surat.periode_awal, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat')
             ->like('arsip_surat.perihal', $section)
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
             ->where('arsip_surat.prodi =', $prodi)
             ->where('arsip_surat.nama_dosen =', $dosen)
-            ->groupBy('arsip_surat.perihal, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
+            ->groupBy('arsip_surat.perihal, arsip_surat.publikasi, arsip_surat.jumlah_matkul, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
             ->findAll();
     }
 

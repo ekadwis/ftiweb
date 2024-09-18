@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <div class="row row-cols-4 my-4 gap-3 card-surat">
+    <div class="row row-cols-5 gap-2 my-4 card-surat mx-2">
         <!-- Card elements will be dynamically inserted here by renderSuratCards function -->
     </div>
 
@@ -185,8 +185,6 @@
             renderSuratCards(data);
         });
         fetchDataMostSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
-            console.log(data, 'DATA ININI');
-
             renderMostChart(data);
         });
         fetchDataLessSuratDosen(`${startYear}-01-01`, `${maxEndYear}-12-31`, selectedProdi, selectedBeban).then(data => {
@@ -254,7 +252,7 @@
         if (groupedSurat.length > 0) {
             groupedSurat.forEach(data => {
                 const card = document.createElement('div');
-                card.className = 'card col';
+                card.className = 'col border p-3 rounded';
 
                 const cardBody = document.createElement('div');
                 cardBody.className = 'card-body d-flex flex-column justify-content-between';
@@ -270,9 +268,6 @@
                 detailButton.href = `/user/detail?section=${data.perihal}&prodi=${selectedProdi}`;
                 detailButton.className = 'btn btn-dark btn-sm';
                 detailButton.textContent = 'Detail';
-                if (data.perihal === "Pengajaran") {
-                    detailButton.style.display = 'none';
-                }
 
                 const textCenterDiv = document.createElement('div');
                 textCenterDiv.className = 'text-center';
@@ -424,9 +419,7 @@
                 text: 'Dosen Dengan Kegiatan Terbanyak'
             },
             xAxis: {
-                categories: data.map((v, i) => {
-                    return v.nama_dosen
-                }),
+                categories: data.map(v => v.nama_dosen),
                 plotLines: [{
                     color: '#000000',
                     width: 1,
@@ -439,7 +432,6 @@
                 title: {
                     text: ''
                 }
-
             },
             legend: {
                 enabled: false,
@@ -459,7 +451,7 @@
             series: [{
                 name: 'Kegiatan',
                 data: data.map((v, i) => {
-                    return parseInt(v.jumlah_surat)
+                    return parseInt(v.jumlah_matkul)
                 }),
             }]
         });
@@ -510,7 +502,7 @@
                 name: 'Kegiatan',
                 data: data.map((v, i) => {
                     return {
-                        y: parseInt(v.jumlah_surat),
+                        y: parseInt(v.jumlah_matkul),
                         color: '#d62728'
                     }
                 }),
