@@ -4,16 +4,12 @@
 <div class="row mt-5">
     <div class="d-flex justify-content-between">
         <div class="d-flex align-items-center gap-3">
-            <div class="fs-5 fw-bold">Program Studi</div>
+            <div class="fs-5 fw-bold">Unit</div>
             <div>
                 <select id="prodiSelect" class="form-select form-select-sm" aria-label="Default select example">
-                    <?php if (empty($prodi)): ?>
-                        <option value=""><?= 'Tidak ada data'; ?></option>
-                    <?php else: ?>
-                        <?php foreach ($prodi as $index => $data): ?>
-                            <option value="<?= $data; ?>" <?= $data == 0 ? 'selected' : ''; ?>><?= $data; ?></option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                    <option value="Sistem Informasi" <?= ($prodi == 'Sistem Informasi') ? 'selected' : '' ?>>Sistem Informasi</option>
+                    <option value="Informatika" <?= ($prodi == 'Informatika') ? 'selected' : '' ?>>Informatika</option>
+                    <option value="Fakultas Teknologi Informasi" <?= ($prodi == 'Fakultas Teknologi Informasi') ? 'selected' : '' ?>>Fakultas Teknologi Informasi</option>
                 </select>
 
             </div>
