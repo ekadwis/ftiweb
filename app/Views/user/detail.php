@@ -35,9 +35,9 @@ foreach ($beban_group as $item) {
             <div class="fs-5 fw-bold">Unit</div>
             <div>
                 <select id="prodiSelect" class="form-select form-select-sm" aria-label="Default select example">
+                    <option value="" <?= ($prodi == '') ? 'selected' : '' ?>>Fakultas Teknologi Informasi</option>
                     <option value="Sistem Informasi" <?= ($prodi == 'Sistem Informasi') ? 'selected' : '' ?>>Sistem Informasi</option>
                     <option value="Informatika" <?= ($prodi == 'Informatika') ? 'selected' : '' ?>>Informatika</option>
-                    <option value="Fakultas Teknologi Informasi" <?= ($prodi == 'Fakultas Teknologi Informasi') ? 'selected' : '' ?>>Fakultas Teknologi Informasi</option>
                 </select>
             </div>
         </div>

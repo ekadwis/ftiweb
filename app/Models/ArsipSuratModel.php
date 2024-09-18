@@ -54,7 +54,7 @@ class ArsipSuratModel extends Model
             ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
-            ->where('arsip_surat.prodi =', $prodi)
+            ->like('arsip_surat.prodi', $prodi)
             ->like('arsip_surat.perihal', $beban)
             ->groupBy('dosen.nama_dosen, dosen.nik_dosen')
             ->orderBy('arsip_surat.jumlah_matkul', $order)
@@ -86,7 +86,7 @@ class ArsipSuratModel extends Model
         return $this->select('*, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat, arsip_surat.periode_akhir, COUNT(DISTINCT id_dosen) as jumlah_dosen')
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
-            ->where('arsip_surat.prodi =', $prodi)
+            ->like('arsip_surat.prodi', $prodi)
             ->groupBy(['arsip_surat.perihal', 'arsip_surat.periode_awal', 'arsip_surat.periode_akhir'])
             ->findAll();
     }
@@ -101,7 +101,7 @@ class ArsipSuratModel extends Model
     {
         return $this->select('arsip_surat.nama_dosen')
             ->like('arsip_surat.perihal', $section)
-            ->where('arsip_surat.prodi', $prodi)
+            ->like('arsip_surat.prodi', $prodi)
             ->groupBy('arsip_surat.id_dosen')
             ->orderBy("arsip_surat.nama_dosen")
             ->findAll();
@@ -174,8 +174,8 @@ class ArsipSuratModel extends Model
             ->like('arsip_surat.perihal', $section)
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
-            ->where('arsip_surat.prodi =', $prodi)
-            ->where('arsip_surat.nama_dosen =', $dosen)
+            ->like('arsip_surat.prodi', $prodi)
+            ->like('arsip_surat.nama_dosen', $dosen)
             ->groupBy('arsip_surat.perihal, arsip_surat.publikasi, arsip_surat.jumlah_matkul, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
             ->findAll();
     }
