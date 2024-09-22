@@ -5,39 +5,51 @@
 <div class="container">
     <form class="m-4 p-5 border border-dark">
         <h2>Detail Pengajuan Surat Dekanat</h2>
-        <div class="form-group mt-4">
-            <label>Tujuan Surat</label>
-            <input class="form-control" type="text" value="<?= $result['tujuan']; ?>" disabled>
-        </div>
         <div class="form-group mt-3">
             <label>Perihal</label>
             <input class="form-control" type="text" value="<?= $result['perihal']; ?>" disabled>
         </div>
-        <div class="form-group mt-3">
-            <label>Kegiatan</label>
-            <input class="form-control" type="text" value="<?= $result['kegiatan_keperluan']; ?>" disabled>
-        </div>
+        <?php if ($result['perihal'] != "Pengajaran") : ?>
+            <div class="form-group mt-3">
+                <label>Kegiatan</label>
+                <input class="form-control" type="text" value="<?= $result['kegiatan_keperluan']; ?>" disabled>
+            </div>
+        <?php endif; ?>
         <?php $i = 1; ?>
         <?php foreach ($listDosen as $dosen) : ?>
-            <div class="form-group mt-3">
-                <label>Nama Dosen <?= $i; ?></label>
-                <input class="form-control" type="text" value="<?= $dosen['nama_dosen']; ?>" disabled>
+            <?php if ($dosen['nama_dosen'] != "") : ?>
+                <div class="form-group mt-3">
+                    <label>Nama Dosen <?= $i; ?></label>
+                    <input class="form-control" type="text" value="<?= $dosen['nama_dosen']; ?>" disabled>
 
-                <div class="form-group mt-3">   
-                    <div class="row">
-                        <div class="col">
-                            <label>Nik Dosen <?= $i; ?></label>
-                            <input type="number" class="form-control" value="<?= $result['nik_dosen']; ?>" disabled>
-                        </div>
-                        <div class="col">
-                            <label>Prodi Dosen <?= $i; ?></label>
-                            <input type="text" class="form-control" value="<?= $result['prodi']; ?>" disabled>
+                    <div class="form-group mt-3">
+                        <div class="row">
+                            <div class="col">
+                                <label>Nik Dosen <?= $i; ?></label>
+                                <input type="number" class="form-control" value="<?= $result['nik_dosen']; ?>" disabled>
+                            </div>
+                            <div class="col">
+                                <label>Prodi Dosen <?= $i; ?></label>
+                                <input type="text" class="form-control" value="<?= $result['prodi']; ?>" disabled>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            <?php endif; ?>
             <input type="hidden" value="<?= $i++; ?>">
         <?php endforeach; ?>
+        <?php if ($result['jenis_publikasi'] != "") : ?>
+            <div class="form-group mt-3">
+                <label>Jenis Publikasi</label>
+                <input class="form-control" type="text" value="<?= $result['jenis_publikasi']; ?>" disabled>
+            </div>
+        <?php endif; ?>
+        <?php if ($result['keputusan'] != "") : ?>
+            <div class="form-group mt-3">
+                <label>Keputusan</label>
+                <input class="form-control" type="text" value="<?= $result['keputusan']; ?>" disabled>
+            </div>
+        <?php endif; ?>
         <div class="form-group mt-3">
             <label>Periode</label>
             <div class="row">

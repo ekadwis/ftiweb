@@ -44,7 +44,6 @@
             <th>No Surat</th>
             <th>Tanggal</th>
             <th>Jabatan</th>
-            <th>Tujuan</th>
             <th>Perihal</th>
             <th>Sifat</th>
             <th>Download</th>
@@ -60,7 +59,6 @@
                 <td><?= $srt['kode_surat']; ?></td>
                 <td><?= $srt['tanggal']; ?></td>
                 <td><?= $srt['username']; ?></td>
-                <td><?= $srt['tujuan']; ?></td>
                 <td><?= $srt['perihal']; ?></td>
                 <td class="<?php
                             switch ($srt['sifat']) {

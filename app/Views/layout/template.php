@@ -101,6 +101,12 @@
                             </ul>
                         </li>
                         <li class="sidebar-item">
+                            <a href="<?= base_url(); ?>admin/daftardosen" class="sidebar-link">
+                                <i class="fa-solid fa-users"></i>
+                                Daftar Dosen
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
                             <a href="<?= base_url(); ?>admin/profiladministrator" class="sidebar-link">
                                 <i class="fa-solid fa-box-archive"></i>
                                 Profil Administrator

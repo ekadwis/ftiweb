@@ -36,10 +36,10 @@ class AdminController extends BaseController
 
     public function index()
     {
-        $total_surat = $this->SuratModel->query('SELECT COUNT(*) AS total_surat FROM surat;')->getRow();
+        $total_surat = $this->SuratModel->query('SELECT COUNT(*) AS total_surat FROM surat WHERE status != "Revisi";')->getRow();
         $total_permohonan_ttd = $this->PermohonanTtdModel->query('SELECT COUNT(*) AS total_permohonan_ttd FROM permohonan_ttd;')->getRow();
         $total_arsip = $this->ArsipSuratModel->query('SELECT COUNT(*) AS total_arsip FROM arsip_surat;')->getRow();
-        
+
         $data = [
             'total_surat' => $total_surat->total_surat,
             'total_permohonan_ttd' => $total_permohonan_ttd->total_permohonan_ttd,
@@ -52,19 +52,28 @@ class AdminController extends BaseController
     public function pengajuanSurat()
     {
         // Ambil data dari model dengan kondisi status 'Pending' atau 'Proses'
-        $data['surat'] = $this->SuratModel->whereIn('status', ['Pending', 'Proses'])->findAll();
+        // $data['surat'] = $this->SuratModel->whereIn('status', ['Pending', 'Proses'])->findAll();
 
         /*
         // Menulis query SQL langsung untuk status 'Pending'
         $sql = "SELECT * FROM surat WHERE status = 'Pending'";
         $data['surat'] = $this->db->query($sql)->getResultArray(); 
         */
+
+        $data['surat'] = $this->SuratModel
+            ->select('surat.*, users.username')  // Memilih semua kolom dari tabel surat dan kolom username dari tabel users
+            ->join('users', 'users.id = surat.id_dekanat')  // Join tabel users dengan kondisi users.id = surat.id_dekanat
+            ->whereIn('surat.status', ['Pending', 'Proses'])  // Kondisi status 'Pending' atau 'Proses'
+            ->findAll();
         return view('admin/data_pengajuan_surat_dekanat', $data);
     }
 
     public function permohonanttd()
     {
-        $data['surat'] = $this->PermohonanTtdModel->findAll();
+        $data['surat'] = $this->PermohonanTtdModel
+            ->select('permohonan_ttd.*, users.username')  // Memilih semua kolom dari tabel permohonan_ttd dan kolom username dari tabel users
+            ->join('users', 'users.id = permohonan_ttd.id_dekanat')  // Join tabel users dengan kondisi users.id = permohonan_ttd.id_user
+            ->findAll();
         return view('admin/permohonan_ttd', $data);
     }
 
@@ -75,6 +84,18 @@ class AdminController extends BaseController
             'surat' => $result,
         ];
         return view('admin/arsip_surat', $data);
+    }
+
+    public function tambahdosen()
+    {
+        $data = [
+            'nama_dosen' => $this->request->getVar('nama_dosen'),
+            'nik_dosen' => $this->request->getVar('nik_dosen'),
+            'prodi_dosen' => $this->request->getVar('prodi_dosen'),
+        ];
+
+        $this->DosenModel->insert($data);
+        return redirect()->to('/admin/daftardosen')->with('msg-dosen', 'Dosen baru berhasil ditambahkan.');
     }
 
     public function daftarpengguna_dekanat()
@@ -129,7 +150,7 @@ class AdminController extends BaseController
             'telp_user' => $this->request->getVar('telp_user'),
             'jeniskelamin_user' => $this->request->getVar('jeniskelamin_user'),
         ];
-        
+
         $this->ProfileModel->save($data);
 
         return redirect()->to('/admin/profiladministrator')->with('msg-success', 'Profil berhasil diubah.');
@@ -139,6 +160,32 @@ class AdminController extends BaseController
     {
         $this->ProfileModel->delete($user_id);
         return redirect()->to('/admin/daftarpengguna_dekanat');
+    }
+
+    public function deletedosen($id_dosen)
+    {
+        $this->DosenModel->delete($id_dosen);
+        return redirect()->to('/admin/daftardosen')->with('msg-dosen', 'Dosen berhasil dihapus');
+    }
+
+    public function editdosen($id_dosen)
+    {
+        $data['result'] = $this->DosenModel->find($id_dosen);
+        return view('admin/edit_dosen', $data);
+    }
+
+    public function savedosen()
+    {
+        $data = [
+            'id_dosen' => $this->request->getVar('id_dosen'),
+            'nama_dosen' => $this->request->getVar('nama_dosen'),
+            'nik_dosen' => $this->request->getVar('nik_dosen'),
+            'prodi_dosen' => $this->request->getVar('prodi_dosen'),
+        ];
+
+        $this->DosenModel->save($data); // update data
+
+        return redirect()->to('/admin/daftardosen')->with('msg-dosen', 'Berhasil melakukan edit dosen');
     }
 
     public function downloadFile($fileName)
@@ -217,7 +264,9 @@ class AdminController extends BaseController
                 'kode_surat' => $data['kode_surat'],
                 'perihal' => $data['perihal'],
                 'jenis_surat' => $data['jenis_surat'],
-                'tujuan' => $data['tujuan'],
+                'jenis_publikasi' => $data['jenis_publikasi'],
+                'keputusan' => $data['keputusan'],
+                'jumlah_matkul' => 0,
                 'prodi' => $data['prodi'],
                 'nama_dosen' => $data['nama_dosen'],
                 'nik_dosen' => $data['nik_dosen'],
@@ -255,6 +304,7 @@ class AdminController extends BaseController
             'result' => $this->PermohonanTtdModel->find($id_permohonan),
             'listDosen' => $dosenData,
             'kodeSurat' => $this->KodeSuratModel->findAll(),
+            'dosens' => $this->DosenModel->findAll(),
         ];
 
         return view('admin/detail_permohonan_ttd', $data);
@@ -266,6 +316,8 @@ class AdminController extends BaseController
         $jenis_surat = $this->request->getVar('jenis_surat');
         $tingkat = $this->request->getVar('tingkat');
         $tahun = $this->request->getVar('tahun');
+        $getPerihal = $this->PermohonanTtdModel->getPerihalById($id_permohonan);
+        $perihal = $getPerihal[0];
 
         if ($jenis_surat === "Surat Keputusan" || $jenis_surat === "Surat Tugas") {
             $kode_surat = $this->request->getVar('kode_surat');
@@ -276,8 +328,61 @@ class AdminController extends BaseController
             $new_no_urut = $get_no_urut[0];
 
             $result = $this->PermohonanTtdModel->where('kode_surat', $kode_surat_awal)->findAll();
+            $res = $result[0];
 
-            $this->PermohonanTtdModel->updateKodeSurat($kode_surat_awal, $kode_surat);
+            if ($perihal === "Pengajaran" && $jenis_surat === "Surat Keputusan") {
+                for ($i = 0; $i <= 10; $i++) {
+                    $id_dosen = $this->request->getVar('dosen' . $i);
+                    $jumlah_matkul = $this->request->getVar('jumlah_matkul' . $i);
+
+                    // Mendapatkan data dosen dari database
+                    $nik_dosen = $this->DosenModel->getNikDosen($id_dosen);
+                    $nama_dosen = $this->DosenModel->getNamaDosen($id_dosen);
+                    $prodi_dosen = $this->DosenModel->getProdiDosen($id_dosen);
+
+                    if ($nik_dosen && $nama_dosen && $prodi_dosen) {
+                        $data = [
+                            'id_surat' => $res['id_surat'],
+                            'id_dekanat' => $res['id_dekanat'],
+                            'id_dosen' => $id_dosen,
+                            'tanggal' => $res['tanggal'],
+                            'kode_surat' => $kode_surat,
+                            'perihal' => $res['perihal'],
+                            'jenis_publikasi' => $res['jenis_publikasi'],
+                            'keputusan' => $res['keputusan'],
+                            'jumlah_matkul' => $jumlah_matkul,
+                            'jenis_surat' => $res['jenis_surat'],
+                            'prodi' => $prodi_dosen[0],
+                            'nama_dosen' => $nama_dosen[0],
+                            'nik_dosen' => $nik_dosen[0],
+                            'kegiatan_keperluan' => $res['kegiatan_keperluan'],
+                            'periode_awal' => $res['periode_awal'],
+                            'periode_akhir' => $res['periode_akhir'],
+                            'sifat' => $res['sifat'],
+                            'tembusan' => $res['tembusan'],
+                            'catatan' => $res['catatan'],
+                            'lampiran' => $res['lampiran'],
+                            'no_urut' => $res['no_urut'],
+                            'status' => $res['status'],
+                            'revisi' => $res['revisi'],
+                        ];
+
+                        // Update no_urut di table kode_surat
+                        $this->KodeSuratModel->update_no_urut($kode_surat, $new_no_urut);
+
+                        // Insert pengajuan ke table surat
+                        $this->PermohonanTtdModel->insert($data);
+                    } else {
+                        // Jika data dosen tidak ditemukan, log kesalahan atau lewati iterasi
+                        continue;
+                    }
+                }
+
+                $this->PermohonanTtdModel->deleteById($id_permohonan);
+            } else {
+                // dd($id_permohonan);
+                $this->PermohonanTtdModel->updateKodeSurat($kode_surat_awal, $kode_surat);
+            }
         } else {
 
             $no_urut = $this->KodeSuratModel->getNoUrutByJenis($jenis_surat);
@@ -287,7 +392,7 @@ class AdminController extends BaseController
 
             $kode_surat_permohonan = $this->PermohonanTtdModel->getKodeSurat($id_permohonan);
             $kode_surat_awal = $this->KodeSuratModel->getKodeSuratByJenis($jenis_surat);
-            $kode_surat = $kode_surat_awal[0] . "/" . $formatted_no_urut;
+            $kode_surat = $formatted_no_urut . "/" . $kode_surat_awal[0];
             $kode_surat = $kode_surat . "/" . $tingkat . "/" . $tahun;
             $result = $this->PermohonanTtdModel->where('kode_surat', $kode_surat_permohonan)->findAll();
 
@@ -307,19 +412,19 @@ class AdminController extends BaseController
         $id_permohonan = $this->request->getVar('id_permohonan');
         $file = $this->request->getFile('lampiran');
         $lampiran_path = null;
-    
+
         if ($file->isValid() && !$file->hasMoved()) {
             // Generate random 32 characters filename
             $newFileName = bin2hex(random_bytes(16)) . '.' . $file->getExtension();
-    
+
             // Define the path to save the file
             $path = WRITEPATH . 'uploads/lampiran_files/';
-    
+
             // Make sure directory exists
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }
-    
+
             // Check for existing file and delete if it exists
             foreach ($this->PermohonanTtdModel->where('id_permohonan', $id_permohonan)->findAll() as $data) {
                 $existingFile = $data['lampiran'];
@@ -327,17 +432,17 @@ class AdminController extends BaseController
                     unlink($path . $existingFile);
                 }
             }
-    
+
             // Move the file to the new location
             $file->move($path, $newFileName);
-    
+
             // Get the file name only (without path)
             $lampiran_path = $newFileName;
         }
-    
+
         $kode_surat = $this->PermohonanTtdModel->getKodeSurat($id_permohonan);
         $result = $this->PermohonanTtdModel->where('kode_surat', $kode_surat)->findAll();
-    
+
         foreach ($result as $data) {
             // Sesuaikan dengan struktur tabel permohonan_ttd
             $this->ArsipSuratModel->insert([
@@ -348,8 +453,10 @@ class AdminController extends BaseController
                 'tanggal' => date('d-m-Y'),
                 'kode_surat' => $data['kode_surat'],
                 'perihal' => $data['perihal'],
+                'jenis_publikasi' => $data['jenis_publikasi'],
+                'keputusan' => $data['keputusan'],
+                'jumlah_matkul' => $data['jumlah_matkul'],
                 'jenis_surat' => $data['jenis_surat'],
-                'tujuan' => $data['tujuan'],
                 'prodi' => $data['prodi'],
                 'nama_dosen' => $data['nama_dosen'],
                 'nik_dosen' => $data['nik_dosen'],
@@ -366,12 +473,12 @@ class AdminController extends BaseController
                 'author' => user()->nama_user,
             ]);
         }
-    
+
         $this->PermohonanTtdModel->where(array('kode_surat' => $kode_surat))->delete();
-    
+
         return redirect()->to('admin/permohonanttd')->with('msg-success', 'Surat berhasil terkirim, hasil akan berada di Arsip.');
     }
-    
+
 
 
     public function surat_masuk_keputusan()
@@ -415,8 +522,9 @@ class AdminController extends BaseController
                     'tanggal' => date('d-m-Y'),
                     'kode_surat' => $this->request->getVar('kode_surat'),
                     'perihal' => $this->request->getVar('perihal'),
+                    'jenis_publikasi' => $this->request->getVar('jenis_publikasi'),
+                    'keputusan' => $this->request->getVar('keputusan'),
                     'jenis_surat' => 'Surat Keputusan',
-                    'tujuan' => "",
                     'prodi' => $prodi_dosen[0],
                     'nama_dosen' => $nama_dosen[0],
                     'nik_dosen' => $nik_dosen[0],
@@ -441,6 +549,12 @@ class AdminController extends BaseController
         }
 
         return redirect()->to('admin/arsipsurat')->with('msg-success', 'Berhasil menginput surat keputusan baru.');
+    }
+
+    public function daftar_dosen()
+    {
+        $data['dosen'] = $this->DosenModel->findAll();
+        return view('admin/daftar_dosen', $data);
     }
 
     public function surat_masuk_tugas()
@@ -484,8 +598,9 @@ class AdminController extends BaseController
                     'tanggal' => date('d-m-Y'),
                     'kode_surat' => $this->request->getVar('kode_surat'),
                     'perihal' => $this->request->getVar('perihal'),
+                    'jenis_publikasi' => $this->request->getVar('jenis_publikasi'),
+                    'keputusan' => $this->request->getVar('keputusan'),
                     'jenis_surat' => 'Surat Tugas',
-                    'tujuan' => "",
                     'prodi' => $prodi_dosen[0],
                     'nama_dosen' => $nama_dosen[0],
                     'nik_dosen' => $nik_dosen[0],

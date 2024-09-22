@@ -29,7 +29,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="<?= base_url(); ?>user/tambahdosen" method="POST" enctype="multipart/form-data">
+                <form action="<?= base_url(); ?>admin/tambahdosen" method="POST" enctype="multipart/form-data">
                     <?= csrf_field(); ?>
 
                     <div class="mb-3">
@@ -74,8 +74,8 @@
                 <td><?= $dsn['nik_dosen']; ?></td>
                 <td><?= $dsn['prodi_dosen']; ?></td>
                 <td>
-                    <a href="<?= base_url(); ?>user/editdosen/<?= $dsn['id_dosen']; ?>"><i class="fas fa-edit text-dark"></i></a>
-                    <a href="<?= base_url(); ?>user/deletedosen/<?= $dsn['id_dosen']; ?>"><i class="fas fa-trash text-danger"></i></a>
+                    <a href="<?= base_url(); ?>admin/editdosen/<?= $dsn['id_dosen']; ?>"><i class="fas fa-edit text-dark"></i></a>
+                    <a href="<?= base_url(); ?>admin/deletedosen/<?= $dsn['id_dosen']; ?>"><i class="fas fa-trash text-danger"></i></a>
                 </td>
             </tr>
         <?php endforeach; ?>

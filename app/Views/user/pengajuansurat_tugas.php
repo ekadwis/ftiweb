@@ -13,13 +13,9 @@
     <form action="<?= base_url(); ?>user/submit_pengajuansurat_tugas" method="POST" enctype="multipart/form-data" class="m-4 p-5 border border-dark">
         <?= csrf_field(); ?>
         <h2>Pengajuan Surat Tugas</h2>
-        <div class="form-group mt-4">
-            <label>Tujuan</label>
-            <input class="form-control" type="text" name="tujuan" required>
-        </div>
         <div class="form-group mt-3">
             <label>Perihal</label>
-            <select class="form-control form-control-sm" name="perihal" required>
+            <select class="form-control form-control-sm" id="perihalSelect" name="perihal" required>
                 <option value="Pengajaran" selected>Pengajaran</option>
                 <option value="Pengabdian">Pengabdian</option>
                 <option value="Pengabdian (Publikasi) Tingkat Internal">Pengabdian (Publikasi) Tingkat Internal</option>
@@ -33,14 +29,37 @@
                 <option value="Penunjang">Penunjang</option>
             </select>
         </div>
+
+        <!-- Field lainnya yang sudah ada -->
         <div class="form-group mt-3">
             <a href="#" id="tambahDosen" class="btn btn-success"><box-icon name='plus' color='#ffffff'></box-icon> Tambah Dosen</a>
         </div>
         <div id="dosenContainer">
             <!-- Tempat untuk menambahkan dosen baru -->
         </div>
+
+        <!-- Tambahan field untuk jenis publikasi dan tugas -->
+        <div id="jenisPublikasiContainer" class="form-group mt-3" style="display: none;">
+            <label>Jenis Publikasi</label>
+            <select class="form-control form-control-sm" name="jenis_publikasi">
+                <option value="">Pilih Jenis Publikasi</option>
+                <option value="Jurnal">Jurnal</option>
+                <option value="Prosiding">Prosiding</option>
+                <option value="HKI">HKI</option>
+                <option value="Paten">Paten</option>
+                <option value="Buku Ajar">Buku Ajar</option>
+                <option value="Buku Chapter">Buku Chapter</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+        </div>
+
+        <div id="keputusanContainer" class="form-group mt-3" style="display: none;">
+            <label>Keputusan</label>
+            <input class="form-control" type="text" name="keputusan">
+        </div>
+
         <div class="form-group mt-3">
-            <label>Kegiatan</label>
+            <label>Keperluan Penugasan</label>
             <input class="form-control" type="text" name="kegiatan_keperluan" required>
         </div>
         <div class="form-group mt-3">
@@ -78,11 +97,27 @@
     </form>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const perihalSelect = document.getElementById("perihalSelect");
+            const jenisPublikasiContainer = document.getElementById("jenisPublikasiContainer");
+            const keputusanContainer = document.getElementById("keputusanContainer");
+
+            perihalSelect.addEventListener("change", function() {
+                const selectedValue = perihalSelect.value;
+
+                if (selectedValue.includes("Pengabdian") || selectedValue.includes("Penelitian")) {
+                    jenisPublikasiContainer.style.display = "block";
+                    keputusanContainer.style.display = "block";
+                } else {
+                    jenisPublikasiContainer.style.display = "none";
+                    keputusanContainer.style.display = "none";
+                }
+            });
+        });
+
         // Data dosen dari server ke JavaScript
         const dosenData = <?= json_encode($dosen); ?>;
-    </script>
 
-    <script>
         document.addEventListener("DOMContentLoaded", function() {
             let dosenCount = 0;
 
@@ -116,7 +151,6 @@
             dosenGroup.remove();
         }
     </script>
-
 
 </div>
 

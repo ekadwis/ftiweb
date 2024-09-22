@@ -32,6 +32,26 @@
         <div id="dosenContainer">
             <!-- Tempat untuk menambahkan dosen baru -->
         </div>
+
+        <!-- Tambahan field untuk jenis publikasi dan keputusan -->
+        <div id="jenisPublikasiContainer" class="form-group mt-3">
+            <label>Jenis Publikasi</label>
+            <select class="form-control form-control-sm" name="jenis_publikasi">
+                <option value="">Pilih Jenis Publikasi</option>
+                <option value="Jurnal">Jurnal</option>
+                <option value="Prosiding">Prosiding</option>
+                <option value="HKI">HKI</option>
+                <option value="Paten">Paten</option>
+                <option value="Buku Ajar">Buku Ajar</option>
+                <option value="Buku Chapter">Buku Chapter</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+        </div>
+
+        <div id="keputusanContainer" class="form-group mt-3">
+            <label>Keputusan</label>
+            <input class="form-control" type="text" name="keputusan">
+        </div>
         <div class="form-group mt-3">
             <label>Kegiatan</label>
             <input class="form-control" type="text" name="kegiatan_keperluan" required>

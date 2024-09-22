@@ -7,13 +7,9 @@
         <?= csrf_field(); ?>
         <h2>Detail Permohonan TTD</h2>
         <input type="hidden" value="<?= $result['id_permohonan']; ?>" name="id_permohonan">
-        <div class="form-group mt-4">
-            <label>Tujuan Surat</label>
-            <input class="form-control" type="text" value="<?= $result['tujuan']; ?>" disabled>
-        </div>
         <div class="form-group mt-3">
             <label>Perihal</label>
-            <input class="form-control" type="text" value="<?= $result['perihal']; ?>" disabled>
+            <input class="form-control" type="text" name="perihal" value="<?= $result['perihal']; ?>" disabled>
         </div>
         <div class="form-group mt-3">
             <div class="row">
@@ -44,9 +40,9 @@
                     <div class="form-group">
                         <label>Tingkat</label>
                         <select class="form-control form-control-sm" name="tingkat">
-                            <option value="FTI" selected>FTI</option>
-                            <option value="FTI-SI">FTI-SI</option>
-                            <option value="FTI-I">FTI-I</option>
+                            <option value="FTI" selected>Fakultas Teknologi Informasi</option>
+                            <option value="FTI-SI">Fakultas Teknologi Informasi - Sistem Informas</option>
+                            <option value="FTI-I">Fakultas Teknologi Informasi - Informasi</option>
                         </select>
                     </div>
                 </div>
@@ -56,27 +52,39 @@
                 </div>
             </div>
         </div>
-        <?php $i = 1; ?>
-        <?php foreach ($listDosen as $dosen) : ?>
-            <div class="form-group mt-3">
-                <label>Nama Dosen <?= $i; ?></label>
-                <input class="form-control" type="text" value="<?= $dosen['nama_dosen']; ?>" disabled>
-
+        <?php if (!($result['perihal'] == "Pengajaran" && $result['jenis_surat'] == "Surat Keputusan")) : ?>
+            <?php $i = 1; ?>
+            <?php foreach ($listDosen as $dosen) : ?>
                 <div class="form-group mt-3">
-                    <div class="row">
-                        <div class="col">
-                            <label>Nik Dosen <?= $i; ?></label>
-                            <input type="number" class="form-control" value="<?= $result['nik_dosen']; ?>" disabled>
-                        </div>
-                        <div class="col">
-                            <label>Prodi Dosen <?= $i; ?></label>
-                            <input type="text" class="form-control" value="<?= $result['prodi']; ?>" disabled>
+                    <label>Nama Dosen <?= $i; ?></label>
+                    <input class="form-control" type="text" value="<?= $dosen['nama_dosen']; ?>" disabled>
+
+                    <div class="form-group mt-3">
+                        <div class="row">
+                            <div class="col">
+                                <label>Nik Dosen <?= $i; ?></label>
+                                <input type="number" class="form-control" value="<?= $dosen['nik_dosen']; ?>" disabled>
+                            </div>
+                            <div class="col">
+                                <label>Prodi Dosen <?= $i; ?></label>
+                                <input type="text" class="form-control" value="<?= $dosen['prodi']; ?>" disabled>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <input type="hidden" value="<?= $i++; ?>">
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <?php if ($result['perihal'] == "Pengajaran" && $result['jenis_surat'] == "Surat Keputusan") : ?>
+            <!-- Field lainnya yang sudah ada -->
+            <div class="form-group mt-3">
+                <a href="#" id="tambahDosen" class="btn btn-success"><box-icon name='plus' color='#ffffff'></box-icon> Tambah Dosen</a>
             </div>
-            <input type="hidden" value="<?= $i++; ?>">
-        <?php endforeach; ?>
+            <div id="dosenContainer">
+                <!-- Tempat untuk menambahkan dosen baru -->
+            </div>
+        <?php endif; ?>
         <div class="form-group mt-3">
             <label>Kegiatan</label>
             <input class="form-control" type="text" value="<?= $result['kegiatan_keperluan']; ?>" disabled>
@@ -104,5 +112,48 @@
         <button type="submit" class="btn btn-secondary">Simpan</button>
     </form>
 </div>
+
+<script>
+    // Data dosen dari server ke JavaScript
+    const dosenData = <?= json_encode($dosens); ?>;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let dosenCount = 0;
+
+        document.getElementById('tambahDosen').addEventListener('click', function(e) {
+            e.preventDefault();
+            dosenCount++;
+
+            let optionsHtml = dosenData.map(d =>
+                `<option value="${d.id_dosen}">${d.nama_dosen}</option>`
+            ).join('');
+
+            let dosenHtml = `
+                <div class="form-group mt-3" id="dosenGroup${dosenCount}">
+                    <div class="d-flex justify-content-between">
+                        <label>Dosen ${dosenCount}</label>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="hapusDosen(${dosenCount})">Hapus</button>
+                    </div>
+                    <select class="form-control form-control-sm" name="dosen${dosenCount}" required>
+                        <option value="">Pilih Dosen</option>
+                        ${optionsHtml}
+                    </select>
+                    <div class="mt-2">
+                        <label>Jumlah Matkul</label>
+                        <input type="number" class="form-control form-control-sm" name="jumlah_matkul${dosenCount}" required>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('dosenContainer').insertAdjacentHTML('beforeend', dosenHtml);
+        });
+    });
+
+    function hapusDosen(dosenId) {
+        let dosenGroup = document.getElementById(`dosenGroup${dosenId}`);
+        dosenGroup.remove();
+    }
+</script>
+
 
 <?= $this->endSection(); ?>

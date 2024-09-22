@@ -253,4 +253,30 @@ class UserController extends BaseController
 
         return $this->response->setJSON($data);
     }
+
+    public function deletedosen($id_dosen)
+    {
+        $this->DosenModel->delete($id_dosen);
+        return redirect()->to('/user/daftardosen')->with('msg-dosen', 'Dosen berhasil dihapus');
+    }
+
+    public function editdosen($id_dosen)
+    {
+        $data['result'] = $this->DosenModel->find($id_dosen);
+        return view ('user/edit_dosen', $data);
+    }
+
+    public function savedosen()
+    {
+        $data = [
+            'id_dosen' => $this->request->getVar('id_dosen'),
+            'nama_dosen' => $this->request->getVar('nama_dosen'),
+            'nik_dosen' => $this->request->getVar('nik_dosen'),
+            'prodi_dosen' => $this->request->getVar('prodi_dosen'),
+        ];
+
+        $this->DosenModel->save($data); // update data
+
+        return redirect()->to('/user/daftardosen')->with('msg-dosen', 'Berhasil melakukan edit dosen');
+    }
 }

@@ -12,7 +12,7 @@ class PermohonanTtdModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id_surat', 'id_dekanat', 'id_dosen', 'tanggal', 'kode_surat', 'perihal', 'jenis_surat', 'tujuan', 'prodi', 'nama_dosen', 'nik_dosen', 'kegiatan_keperluan', 'periode_awal', 'periode_akhir', 'sifat', 'tembusan', 'catatan', 'lampiran', 'no_urut', 'status'];
+    protected $allowedFields    = ['id_surat', 'id_dekanat', 'id_dosen', 'tanggal', 'kode_surat', 'perihal', 'jenis_surat', 'tujuan', 'prodi', 'nama_dosen', 'nik_dosen', 'kegiatan_keperluan', 'periode_awal', 'periode_akhir', 'sifat', 'tembusan', 'catatan', 'lampiran', 'no_urut', 'status', 'jenis_publikasi', 'keputusan'];
 
 
     protected bool $allowEmptyInserts = false;
@@ -44,33 +44,45 @@ class PermohonanTtdModel extends Model
     public function getKodeSurat($id_permohonan)
     {
         return $this->where('id_permohonan', $id_permohonan)
-                    ->findColumn('kode_surat');
+            ->findColumn('kode_surat');
     }
 
     public function getNoUrut($id_permohonan)
     {
         return $this->where('id_permohonan', $id_permohonan)
-                    ->findColumn('no_urut');
+            ->findColumn('no_urut');
     }
 
     public function getDosenByKodeSurat($kode_surat)
     {
         return $this->select('nama_dosen, nik_dosen, prodi')
-                    ->where('kode_surat', $kode_surat)
-                    ->findAll();
+            ->where('kode_surat', $kode_surat)
+            ->findAll();
     }
 
     public function updateKodeSurat($old_kode_surat, $new_kode_surat)
     {
         return $this->set('kode_surat', $new_kode_surat)
-                    ->where('kode_surat', $old_kode_surat)
-                    ->update();
+            ->where('kode_surat', $old_kode_surat)
+            ->update();
     }
 
     public function updateJenisSurat($kode_surat, $jenis_surat)
     {
         return $this->set('jenis_surat', $jenis_surat)
-                    ->where('kode_surat', $kode_surat)
-                    ->update();
+            ->where('kode_surat', $kode_surat)
+            ->update();
+    }
+
+    public function deleteById($id_permohonan)
+    {
+        return $this->where('id_permohonan', $id_permohonan)
+            ->delete();
+    }
+
+    public function getPerihalById($id_permohonan)
+    {
+        return $this->where('id_permohonan', $id_permohonan)
+            ->findColumn('perihal');
     }
 }

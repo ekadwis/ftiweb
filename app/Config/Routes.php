@@ -38,6 +38,11 @@ $routes->group('admin', ['filter' => 'role:administrator'], function ($routes) {
     $routes->post('submit_revisi_pengajuan_surat', 'AdminController::submit_revisi_pengajuan_surat');
     $routes->post('surat_masuk_keputusan', 'AdminController::surat_masuk_keputusan');
     $routes->post('surat_masuk_tugas', 'AdminController::surat_masuk_tugas');
+    $routes->get('daftardosen', 'AdminController::daftar_dosen');
+    $routes->post('tambahdosen', 'AdminController::tambahdosen');
+    $routes->get('deletedosen/(:any)', 'AdminController::deletedosen/$1');
+    $routes->get('editdosen/(:any)', 'AdminController::editdosen/$1');
+    $routes->post('savedosen', 'AdminController::savedosen');
 });
 
 // Users 
@@ -64,4 +69,7 @@ $routes->group('user', ['filter' => 'role:user'], function ($routes) {
     $routes->post('submit_pengajuansurat_tugas', 'SuratController::submit_pengajuansurat_tugas');
     $routes->post('submit_pengajuansurat_keputusan', 'SuratController::submit_pengajuansurat_keputusan');
     $routes->post('submit_pengajuansurat_formal', 'SuratController::submit_pengajuansurat_formal');
+    $routes->get('deletedosen/(:any)', 'UserController::deletedosen/$1');
+    $routes->get('editdosen/(:any)', 'UserController::editdosen/$1');
+    $routes->post('savedosen', 'UserController::savedosen');
 });

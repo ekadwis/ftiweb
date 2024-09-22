@@ -14,10 +14,6 @@
     <?= csrf_field(); ?>
         <h2>Pengajuan Surat Formal</h2>
         <div class="form-group mt-4">
-            <label>Tujuan</label>
-            <input class="form-control" type="text" name="tujuan" required>
-        </div>
-        <div class="form-group mt-4">
             <label>Perihal</label>
             <input class="form-control" type="text" name="perihal" required>
         </div>
