@@ -86,8 +86,8 @@
             </div>
         <?php endif; ?>
         <div class="form-group mt-3">
-            <label>Kegiatan</label>
-            <input class="form-control" type="text" value="<?= $result['kegiatan_keperluan']; ?>" disabled>
+            <label>Keputusan</label>
+            <input class="form-control" type="text" value="<?= $result['keputusan']; ?>" disabled>
         </div>
         <div class="form-group mt-3">
             <label>Periode</label>

@@ -25,7 +25,7 @@
             <th>Jenis Surat</th>
             <th>Kode Surat</th>
             <th>Perihal</th>
-            <th>Kegiatan</th>
+            <th>Keputusan</th>
             <th>Nama Dosen</th>
             <th>Prodi</th>
             <th>Periode</th>
@@ -42,7 +42,7 @@
             <td><?= $srt['jenis_surat']; ?></td>
             <td><?= $srt['kode_surat']; ?></td>
             <td><?= $srt['perihal']; ?></td>
-            <td><?= $srt['kegiatan_keperluan']; ?></td>
+            <td><?= $srt['keputusan']; ?></td>
             <td><?= $srt['nama_dosen']; ?></td>
             <td><?= $srt['prodi']; ?></td>
             <td><?= $srt['periode_awal']; ?> s.d <?= $srt['periode_akhir']; ?></td>

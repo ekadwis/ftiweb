@@ -124,14 +124,14 @@ class AdminController extends BaseController
 
     public function surattugas()
     {
-        $data['dosen'] = $this->DosenModel->findAll();
+        $data['dosen'] = $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll();
         return view('admin/surat_tugas', $data);
     }
 
     public function suratkeputusan()
     {
 
-        $data['dosen'] = $this->DosenModel->findAll();
+        $data['dosen'] = $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll();
         return view('admin/surat_keputusan', $data);
     }
 
@@ -270,7 +270,6 @@ class AdminController extends BaseController
                 'prodi' => $data['prodi'],
                 'nama_dosen' => $data['nama_dosen'],
                 'nik_dosen' => $data['nik_dosen'],
-                'kegiatan_keperluan' => $data['kegiatan_keperluan'],
                 'periode_awal' => $data['periode_awal'],
                 'periode_akhir' => $data['periode_akhir'],
                 'sifat' => $data['sifat'],
@@ -355,7 +354,6 @@ class AdminController extends BaseController
                             'prodi' => $prodi_dosen[0],
                             'nama_dosen' => $nama_dosen[0],
                             'nik_dosen' => $nik_dosen[0],
-                            'kegiatan_keperluan' => $res['kegiatan_keperluan'],
                             'periode_awal' => $res['periode_awal'],
                             'periode_akhir' => $res['periode_akhir'],
                             'sifat' => $res['sifat'],
@@ -460,7 +458,6 @@ class AdminController extends BaseController
                 'prodi' => $data['prodi'],
                 'nama_dosen' => $data['nama_dosen'],
                 'nik_dosen' => $data['nik_dosen'],
-                'kegiatan_keperluan' => $data['kegiatan_keperluan'],
                 'periode_awal' => $data['periode_awal'],
                 'periode_akhir' => $data['periode_akhir'],
                 'sifat' => $data['sifat'],
@@ -487,6 +484,13 @@ class AdminController extends BaseController
         $file = $this->request->getFile('lampiran');
         $lampiran_path = null;
 
+        // cek dosen
+        $cekdosen = $this->request->getVar('dosen1');
+        if (empty($cekdosen)) {
+            return redirect()->to('admin/suratkeputusan')->with('msg-failed', 'Dosen belum terisi');
+        }
+
+
         if ($file->isValid() && !$file->hasMoved()) {
             // Generate random 32 characters filename
             $newFileName = bin2hex(random_bytes(16)) . '.' . $file->getExtension();
@@ -513,6 +517,48 @@ class AdminController extends BaseController
             $nama_dosen = $this->DosenModel->getNamaDosen($id_dosen);
             $prodi_dosen = $this->DosenModel->getProdiDosen($id_dosen);
 
+            $jenis_publikasi = $this->request->getVar('jenis_publikasi');
+            $perihal = $this->request->getVar('perihal');
+
+            $jumlah_matkul = $this->request->getVar('jumlah_matkul' . $i);
+            
+            if ($perihal == "Pengajaran" || $perihal == "Penunjang") {
+                $jenis_publikasi = "";
+
+                if ($nik_dosen && $nama_dosen && $prodi_dosen) {
+                    $data = [
+                        'id_permohonan' => 0,
+                        'id_surat' => 0,
+                        'id_dekanat' => user()->id,
+                        'id_dosen' => $id_dosen,
+                        'tanggal' => date('d-m-Y'),
+                        'kode_surat' => $this->request->getVar('kode_surat'),
+                        'perihal' => $perihal,
+                        'jenis_publikasi' => $this->request->getVar('jenis_publikasi'),
+                        'keputusan' => $this->request->getVar('keputusan'),
+                        'jenis_surat' => 'Surat Keputusan',
+                        'prodi' => $prodi_dosen[0],
+                        'nama_dosen' => $nama_dosen[0],
+                        'nik_dosen' => $nik_dosen[0],
+                        'periode_awal' => $this->request->getVar('periode_awal'),
+                        'periode_akhir' => $this->request->getVar('periode_akhir'),
+                        'sifat' => "Urgent",
+                        'jumlah_matkul' => $jumlah_matkul,
+                        'tembusan' => "",
+                        'catatan' => "",
+                        'lampiran' => $lampiran_path,
+                        'no_urut' => 0,
+                        'status' => "Download",
+                        'author' => user()->nama_user,
+                        'revisi' => "",
+                    ];
+    
+                    // Insert pengajuan ke table arsip
+                    $this->ArsipSuratModel->insert($data);
+                    return redirect()->to('admin/arsipsurat')->with('msg-success', 'Berhasil menginput surat keputusan baru.');
+                }
+            }
+
             if ($nik_dosen && $nama_dosen && $prodi_dosen) {
                 $data = [
                     'id_permohonan' => 0,
@@ -521,17 +567,17 @@ class AdminController extends BaseController
                     'id_dosen' => $id_dosen,
                     'tanggal' => date('d-m-Y'),
                     'kode_surat' => $this->request->getVar('kode_surat'),
-                    'perihal' => $this->request->getVar('perihal'),
+                    'perihal' => $perihal,
                     'jenis_publikasi' => $this->request->getVar('jenis_publikasi'),
                     'keputusan' => $this->request->getVar('keputusan'),
                     'jenis_surat' => 'Surat Keputusan',
                     'prodi' => $prodi_dosen[0],
                     'nama_dosen' => $nama_dosen[0],
                     'nik_dosen' => $nik_dosen[0],
-                    'kegiatan_keperluan' => $this->request->getVar('kegiatan_keperluan'),
                     'periode_awal' => $this->request->getVar('periode_awal'),
                     'periode_akhir' => $this->request->getVar('periode_akhir'),
                     'sifat' => "Urgent",
+                    'jumlah_matkul' => $jumlah_matkul,
                     'tembusan' => "",
                     'catatan' => "",
                     'lampiran' => $lampiran_path,
@@ -553,7 +599,7 @@ class AdminController extends BaseController
 
     public function daftar_dosen()
     {
-        $data['dosen'] = $this->DosenModel->findAll();
+        $data['dosen'] = $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll();
         return view('admin/daftar_dosen', $data);
     }
 
@@ -562,6 +608,12 @@ class AdminController extends BaseController
         // Handle file upload
         $file = $this->request->getFile('lampiran');
         $lampiran_path = null;
+
+        // cek dosen
+        $cekdosen = $this->request->getVar('dosen1');
+        if (empty($cekdosen)) {
+            return redirect()->to('admin/suratkeputusan')->with('msg-failed', 'Dosen belum terisi');
+        }
 
         if ($file->isValid() && !$file->hasMoved()) {
             // Generate random 32 characters filename
@@ -589,6 +641,8 @@ class AdminController extends BaseController
             $nama_dosen = $this->DosenModel->getNamaDosen($id_dosen);
             $prodi_dosen = $this->DosenModel->getProdiDosen($id_dosen);
 
+            $jumlah_matkul = $this->request->getVar('jumlah_matkul' . $i);
+
             if ($nik_dosen && $nama_dosen && $prodi_dosen) {
                 $data = [
                     'id_permohonan' => 0,
@@ -604,13 +658,13 @@ class AdminController extends BaseController
                     'prodi' => $prodi_dosen[0],
                     'nama_dosen' => $nama_dosen[0],
                     'nik_dosen' => $nik_dosen[0],
-                    'kegiatan_keperluan' => $this->request->getVar('kegiatan_keperluan'),
                     'periode_awal' => $this->request->getVar('periode_awal'),
                     'periode_akhir' => $this->request->getVar('periode_akhir'),
                     'sifat' => "Urgent",
                     'tembusan' => "",
                     'catatan' => "",
                     'lampiran' => $lampiran_path,
+                    'jumlah_matkul' => $jumlah_matkul,
                     'no_urut' => 0,
                     'status' => "Download",
                     'author' => user()->nama_user,

@@ -59,10 +59,6 @@
         </div>
 
         <div class="form-group mt-3">
-            <label>Keperluan Penugasan</label>
-            <input class="form-control" type="text" name="kegiatan_keperluan" required>
-        </div>
-        <div class="form-group mt-3">
             <label>Periode</label>
             <div class="row">
                 <div class="col">

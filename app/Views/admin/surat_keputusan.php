@@ -13,6 +13,10 @@
     <form action="<?= base_url(); ?>admin/surat_masuk_keputusan" method="POST" enctype="multipart/form-data" class="m-4 p-5 border border-dark">
         <?= csrf_field(); ?>
         <h2>Pengajuan Surat Keputusan</h2>
+        <div class="form-group mt-4">
+            <label>Nomor Surat</label>
+            <input class="form-control" type="text" name="kode_surat" required>
+        </div>
         <div class="form-group mt-3">
             <label>Perihal</label>
             <select class="form-control form-control-sm" id="perihalSelect" name="perihal" required>
@@ -56,11 +60,6 @@
         <div id="keputusanContainer" class="form-group mt-3" style="display: none;">
             <label>Keputusan</label>
             <input class="form-control" type="text" name="keputusan">
-        </div>
-
-        <div class="form-group mt-3">
-            <label>Keperluan Penugasan</label>
-            <input class="form-control" type="text" name="kegiatan_keperluan" required>
         </div>
         <div class="form-group mt-3">
             <label>Periode</label>
@@ -122,13 +121,6 @@
                     jenisPublikasiContainer.style.display = "none";
                     keputusanContainer.style.display = "none";
                 }
-
-                // Sembunyikan tombol "Tambah Dosen" jika Perihal adalah "Pengajaran"
-                if (selectedValue === "Pengajaran") {
-                    tambahDosenButton.style.display = "none";
-                } else {
-                    tambahDosenButton.style.display = "block";
-                }
             });
 
             // Memicu event change di awal agar tombol sesuai dengan nilai default
@@ -159,6 +151,10 @@
                         <option value="">Pilih Dosen</option>
                         ${optionsHtml}
                     </select>
+                </div>
+                <div class="form-group mt-3">
+                    <label>Jumlah Matkul ${dosenCount}</label>
+                    <input class="form-control" type="text" name="jumlah_matkul${dosenCount}" required>
                 </div>
             `;
 

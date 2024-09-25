@@ -9,12 +9,6 @@
             <label>Perihal</label>
             <input class="form-control" type="text" value="<?= $result['perihal']; ?>" disabled>
         </div>
-        <?php if ($result['perihal'] != "Pengajaran") : ?>
-            <div class="form-group mt-3">
-                <label>Kegiatan</label>
-                <input class="form-control" type="text" value="<?= $result['kegiatan_keperluan']; ?>" disabled>
-            </div>
-        <?php endif; ?>
         <?php $i = 1; ?>
         <?php foreach ($listDosen as $dosen) : ?>
             <?php if ($dosen['nama_dosen'] != "") : ?>
@@ -26,7 +20,7 @@
                         <div class="row">
                             <div class="col">
                                 <label>Nik Dosen <?= $i; ?></label>
-                                <input type="number" class="form-control" value="<?= $dosen['nik_dosen']; ?>" disabled>
+                                <input type="text" class="form-control" value="<?= $dosen['nik_dosen']; ?>" disabled>
                             </div>
                             <div class="col">
                                 <label>Prodi Dosen <?= $i; ?></label>

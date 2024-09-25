@@ -26,8 +26,8 @@
             </select>
         </div>
         <div class="form-group mt-3">
-            <label for="kegiatan_keperluan" class="form-label">Keperluan</label>
-            <textarea class="form-control" id="kegiatan_keperluan" rows="3" name="kegiatan_keperluan" required></textarea>
+            <label for="keputusan" class="form-label">keputusan</label>
+            <textarea class="form-control" id="keputusan" rows="3" name="keputusan" required></textarea>
         </div>
         <div class="form-group mt-3">
             <label>Tanggal</label>

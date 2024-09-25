@@ -83,7 +83,6 @@ class SuratController extends BaseController
                     'prodi' => $prodi_dosen[0],
                     'nama_dosen' => $nama_dosen[0],
                     'nik_dosen' => $nik_dosen[0],
-                    'kegiatan_keperluan' => $this->request->getVar('kegiatan_keperluan'),
                     'periode_awal' => $this->request->getVar('periode_awal'),
                     'periode_akhir' => $this->request->getVar('periode_akhir'),
                     'sifat' => $this->request->getVar('sifat'),
@@ -166,7 +165,6 @@ class SuratController extends BaseController
                         'prodi' => $prodi_dosen,
                         'nama_dosen' => $nama_dosen,
                         'nik_dosen' => $nik_dosen,
-                        'kegiatan_keperluan' => $this->request->getVar('kegiatan_keperluan'),
                         'periode_awal' => $this->request->getVar('periode_awal'),
                         'periode_akhir' => $this->request->getVar('periode_akhir'),
                         'sifat' => $this->request->getVar('sifat'),
@@ -183,6 +181,8 @@ class SuratController extends BaseController
                     $this->SuratModel->insert($data);
 
                     return redirect()->to('/user/daftarsurat')->with('msg-surat', 'Surat baru berhasil ditambahkan.');
+                } else {
+                    return redirect()->to('user/pengajuansurat_keputusan')->with('msg-failed', 'Dosen belum terisi');
                 }
             }
 
@@ -205,7 +205,6 @@ class SuratController extends BaseController
                     'prodi' => $prodi_dosen[0],
                     'nama_dosen' => $nama_dosen[0],
                     'nik_dosen' => $nik_dosen[0],
-                    'kegiatan_keperluan' => $this->request->getVar('kegiatan_keperluan'),
                     'periode_awal' => $this->request->getVar('periode_awal'),
                     'periode_akhir' => $this->request->getVar('periode_akhir'),
                     'sifat' => $this->request->getVar('sifat'),
@@ -287,7 +286,6 @@ class SuratController extends BaseController
                 'prodi' => $prodi_dosen[0],
                 'nama_dosen' => $nama_dosen[0],
                 'nik_dosen' => $nik_dosen[0],
-                'kegiatan_keperluan' => $this->request->getVar('kegiatan_keperluan'),
                 'periode_awal' => $this->request->getVar('periode_awal'),
                 'periode_akhir' => $this->request->getVar('periode_akhir'),
                 'sifat' => $this->request->getVar('sifat'),
