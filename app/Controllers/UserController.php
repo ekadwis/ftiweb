@@ -163,17 +163,17 @@ class UserController extends BaseController
         $groupedData = [];
 
         foreach ($data as $item) {
-            if (stripos($item['publikasi'], 'Jurnal') !== false) {
+            if (stripos($item['jenis_publikasi'], 'Jurnal') !== false) {
                 $key = 'Jurnal';
-            } elseif (stripos($item['publikasi'], 'Prosiding') !== false) {
+            } elseif (stripos($item['jenis_publikasi'], 'Prosiding') !== false) {
                 $key = 'Prosiding';
-            } elseif (stripos($item['publikasi'], 'HKI') !== false) {
+            } elseif (stripos($item['jenis_publikasi'], 'HKI') !== false) {
                 $key = 'HKI';
-            } elseif (stripos($item['publikasi'], 'Paten') !== false) {
+            } elseif (stripos($item['jenis_publikasi'], 'Paten') !== false) {
                 $key = 'Paten';
-            } elseif (stripos($item['publikasi'], 'Buku Ajar') !== false) {
+            } elseif (stripos($item['jenis_publikasi'], 'Buku Ajar') !== false) {
                 $key = 'Buku Ajar';
-            } elseif (stripos($item['publikasi'], 'Buku Chapter') !== false) {
+            } elseif (stripos($item['jenis_publikasi'], 'Buku Chapter') !== false) {
                 $key = 'Buku Chapter';
             } else {
                 $key = 'Lainnya';
@@ -181,8 +181,8 @@ class UserController extends BaseController
 
             if (!isset($groupedData[$key])) {
                 $groupedData[$key] = [
-                    'publikasi' => $key,
-                    'kegiatan_keperluan' => $item['kegiatan_keperluan'],
+                    'jenis_publikasi' => $key,
+                    'keputusan' => $item['keputusan'],
                     'periode_awal' => $item['periode_awal'],
                     'periode_akhir' => $item['periode_akhir'],
                     'jumlah_surat' => (int) $item['jumlah_surat'],

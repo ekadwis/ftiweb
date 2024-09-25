@@ -403,7 +403,7 @@ foreach ($beban_group as $item) {
     const tableBody = document.getElementById("table-kegiatan");
 
     function bebanKerjaChart(data) {
-        const validData = data.filter(item => item.publikasi !== null && item.jumlah_surat !== "0");
+        const validData = data.filter(item => item.jenis_publikasi !== null && item.jumlah_surat !== "0");
 
         let chartData;
 
@@ -414,7 +414,7 @@ foreach ($beban_group as $item) {
             }];
         } else {
             chartData = validData.map(item => ({
-                name: item.publikasi,
+                name: item.jenis_publikasi,
                 y: parseInt(item.jumlah_surat)
             }));
         }
@@ -561,7 +561,7 @@ foreach ($beban_group as $item) {
     function populateTable(data) {
         tableBody.innerHTML = '';
 
-        const validData = data.filter(item => item.kegiatan_keperluan !== null && item.periode_awal !== null && item.periode_akhir !== null);
+        const validData = data.filter(item => item.keputusan !== null && item.periode_awal !== null && item.periode_akhir !== null);
 
         if (validData.length === 0) {
             const row = document.createElement('tr');
@@ -575,7 +575,7 @@ foreach ($beban_group as $item) {
 
                 row.innerHTML = `
                 <th scope="row">${index + 1}</th>
-                <td>${item.kegiatan_keperluan || 'No Data'}</td>
+                <td>${item.keputusan || 'No Data'}</td>
                 <td ${`<?= $detail_page; ?>` !== 'Pengajaran' ? 'hidden' : ''}>${item.jumlah_matkul || 'No Data'}</td>
                 <td>${formatDate(item.periode_awal) || 'No Data'}</td>
                 <td>${formatDate(item.periode_akhir) || 'No Data'}</td>

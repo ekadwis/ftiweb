@@ -12,7 +12,7 @@ class ArsipSuratModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id_permohonan', 'id_surat', 'id_dekanat', 'id_dosen', 'tanggal', 'kode_surat', 'perihal', 'jenis_surat', 'tujuan', 'prodi', 'nama_dosen', 'nik_dosen', 'kegiatan_keperluan', 'periode_awal', 'periode_akhir', 'sifat', 'tembusan', 'catatan', 'lampiran', 'no_urut', 'status', 'revisi', 'author', 'jenis_publikasi', 'keputusan'];
+    protected $allowedFields    = ['id_permohonan', 'id_surat', 'id_dekanat', 'id_dosen', 'tanggal', 'kode_surat', 'perihal', 'jenis_surat', 'tujuan', 'prodi', 'nama_dosen', 'nik_dosen', 'keputusan', 'periode_awal', 'periode_akhir', 'sifat', 'tembusan', 'catatan', 'lampiran', 'no_urut', 'status', 'revisi', 'author', 'jenis_publikasi', 'keputusan'];
 
     protected bool $allowEmptyInserts = false;
 
@@ -93,7 +93,7 @@ class ArsipSuratModel extends Model
 
     public function findBySection($section)
     {
-        return $this->select('arsip_surat.perihal, arsip_surat.nama_dosen, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
+        return $this->select('arsip_surat.perihal, arsip_surat.nama_dosen, arsip_surat.keputusan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
             ->like('arsip_surat.perihal', $section)
             ->findAll();
     }
@@ -170,13 +170,13 @@ class ArsipSuratModel extends Model
     }
     public function getBebanKerjaDetail($section, $startDate, $endDate, $prodi, $dosen)
     {
-        return $this->select('arsip_surat.perihal, arsip_surat.kegiatan_keperluan, arsip_surat.publikasi, arsip_surat.jumlah_matkul, arsip_surat.periode_awal, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat')
+        return $this->select('arsip_surat.perihal, arsip_surat.keputusan, arsip_surat.jenis_publikasi, arsip_surat.jumlah_matkul, arsip_surat.periode_awal, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat')
             ->like('arsip_surat.perihal', $section)
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
             ->like('arsip_surat.prodi', $prodi)
             ->like('arsip_surat.nama_dosen', $dosen)
-            ->groupBy('arsip_surat.perihal, arsip_surat.publikasi, arsip_surat.jumlah_matkul, arsip_surat.kegiatan_keperluan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
+            ->groupBy('arsip_surat.perihal, arsip_surat.jenis_publikasi, arsip_surat.jumlah_matkul, arsip_surat.keputusan, arsip_surat.periode_awal, arsip_surat.periode_akhir')
             ->findAll();
     }
 
