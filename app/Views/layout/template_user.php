@@ -41,25 +41,25 @@
                     </li>
                     <li class="sidebar-item">
                         <a href="<?= base_url(); ?>user/pengajuan_surat" class="sidebar-link">
-                            <i class="fa-solid fa-house"></i>
+                            <i class="fa-solid fa-envelope"></i>
                             Pengajuan Surat
                         </a>
                     </li>
                     <li class="sidebar-item">
                         <a href="<?= base_url(); ?>user/daftarsurat" class="sidebar-link">
-                            <i class="fa-solid fa-house"></i>
+                            <i class="fa-solid fa-envelope"></i>
                             Daftar Surat
                         </a>
                     </li>
                     <li class="sidebar-item">
                         <a href="<?= base_url(); ?>user/daftardosen" class="sidebar-link">
-                            <i class="fa-solid fa-house"></i>
+                            <i class="fa-solid fa-users"></i>
                             Daftar Dosen
                         </a>
                     </li>
                     <li class="sidebar-item">
                         <a href="<?= base_url('logout'); ?>" class="sidebar-link">
-                            <i class="fa-solid fa-house"></i>
+                            <i class="fa-solid fa-right-from-bracket"></i>
                             Logout
                         </a>
                     </li>

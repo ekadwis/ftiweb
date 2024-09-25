@@ -157,7 +157,7 @@
                         </li>
                         <li class="sidebar-item">
                             <a href="<?= base_url('logout'); ?>" class="sidebar-link">
-                                <i class="fa-solid fa-house"></i>
+                                <i class="fa-solid fa-right-from-bracket"></i>
                                 Logout
                             </a>
                         </li>
