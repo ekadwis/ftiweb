@@ -77,7 +77,7 @@ class UserController extends BaseController
         $data['dosen_prodi'] =  $this->ArsipModel
             ->distinct()
             ->select('nama_dosen')
-            ->where('arsip_surat.prodi', $prodi)
+            ->like('arsip_surat.prodi', $prodi)
             ->like('perihal', $section)
             ->findColumn('nama_dosen');
         $data['detail'] =  $this->ArsipModel->findBySection($section);
