@@ -130,10 +130,26 @@ class UserController extends BaseController
         $endDate = $request->getVar('endDate');
         $prodi = $request->getVar('prodi');
 
-        $data = $this->ArsipModel->getPerihalDosen($startDate, $endDate, $prodi);
+        // Mengambil data surat
+        $data = $this->ArsipModel->getSuratPerihalDosen($startDate, $endDate, $prodi);
 
-        return $this->response->setJSON($data);
+        // Menghitung jumlah surat
+        $jumlahSurat = count($data);
+
+        // Menghitung jumlah dosen (menggunakan array_unique untuk mendapatkan dosen yang unik)
+        $jumlahDosen = count(array_unique(array_column($data, 'id_dosen')));
+
+        // Membuat array untuk dikembalikan
+        $result = [
+            'data' => $data,
+            'jumlah_surat' => $jumlahSurat,
+            'jumlah_dosen' => $jumlahDosen,
+        ];
+
+        // Mengembalikan hasil sebagai JSON
+        return $this->response->setJSON($result);
     }
+
 
     public function suratDosen()
     {
@@ -263,7 +279,7 @@ class UserController extends BaseController
     public function editdosen($id_dosen)
     {
         $data['result'] = $this->DosenModel->find($id_dosen);
-        return view ('user/edit_dosen', $data);
+        return view('user/edit_dosen', $data);
     }
 
     public function savedosen()

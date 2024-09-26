@@ -199,9 +199,11 @@
 </script>
 
 <script>
-    function renderSuratCards(data) {
+    function renderSuratCards(responseData) {
+        const data = responseData.data; // Ambil data surat dari respons
         const groupedSurat = [];
 
+        // Mengelompokkan data berdasarkan perihal
         data.forEach(item => {
             let key;
 
@@ -220,30 +222,28 @@
             let found = groupedSurat.find(group => group.perihal === key);
 
             if (!found) {
-                // Menggunakan Set untuk memastikan nama dosen tidak terduplikat
-                const uniqueDosen = new Set([item.nama_dosen]);
-
+                // Jika grup belum ada, tambahkan grup baru
                 groupedSurat.push({
                     perihal: key,
-                    jumlah_surat: parseInt(item.jumlah_surat),
-                    dosen: uniqueDosen
+                    jumlah_surat: 1, // Inisialisasi jumlah_surat dengan 1
+                    dosen: new Set([item.nama_dosen]) // Mulai Set dengan nama dosen pertama
                 });
             } else {
-                // Tambahkan jumlah surat
-                found.jumlah_surat += parseInt(item.jumlah_surat);
+                // Jika grup sudah ada, tambah jumlah_surat
+                found.jumlah_surat += 1; // Tambah jumlah surat
                 // Tambahkan nama dosen ke dalam Set (untuk menghindari duplikasi)
                 found.dosen.add(item.nama_dosen);
             }
         });
 
-        // Setelah semua item di proses, ubah Set dosen menjadi jumlah_dosen
+        // Setelah semua item diproses, ubah Set dosen menjadi jumlah_dosen
         groupedSurat.forEach(group => {
             group.jumlah_dosen = group.dosen.size; // hitung jumlah dosen unik
             delete group.dosen; // hapus Set dosen setelah selesai
         });
 
         const container = document.querySelector('.card-surat');
-        container.innerHTML = "";
+        container.innerHTML = ""; // Kosongkan kontainer
 
         if (groupedSurat.length > 0) {
             groupedSurat.forEach(data => {
@@ -270,12 +270,13 @@
 
                 const jumlahSurat = document.createElement('p');
                 jumlahSurat.className = 'card-text fs-3 fw-bold';
-                jumlahSurat.textContent = data.jumlah_surat;
+                jumlahSurat.textContent = data.jumlah_surat; // Menggunakan jumlah_surat dari grup
 
                 const jumlahDosen = document.createElement('p');
                 jumlahDosen.className = 'card-text fw-normal fs-5';
-                jumlahDosen.textContent = `${data.jumlah_dosen} Dosen`;
+                jumlahDosen.textContent = `${data.jumlah_dosen} Dosen`; // Menggunakan jumlah_dosen dari grup
 
+                // Menambahkan elemen ke dalam struktur kartu
                 headerDiv.appendChild(title);
                 headerDiv.appendChild(detailButton);
                 cardBody.appendChild(headerDiv);
@@ -292,8 +293,8 @@
             emptyMessage.textContent = 'Data Tidak ada';
             container.appendChild(emptyMessage);
         }
-
     }
+
 
     function fecthSuratData(startDate, endDate, prodi) {
         return fetch(`http://localhost:8080/user/surat-data?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&prodi=${encodeURIComponent(prodi)}`)

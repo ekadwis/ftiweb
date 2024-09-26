@@ -81,6 +81,16 @@ class ArsipSuratModel extends Model
 
         return $result;
     }
+    public function getSuratPerihalDosen($startDate, $endDate, $prodi)
+    {
+        return $this->select('arsip_surat.*') // Mengambil semua kolom dari arsip_surat
+            ->where('arsip_surat.periode_awal >=', $startDate)
+            ->where('arsip_surat.periode_akhir <=', $endDate)
+            ->like('arsip_surat.prodi', $prodi)
+            ->findAll();
+    }
+
+
     public function getPerihalDosen($startDate, $endDate, $prodi)
     {
         return $this->select('*, arsip_surat.periode_akhir, COUNT(id_arsip) as jumlah_surat, arsip_surat.periode_akhir, COUNT(DISTINCT id_dosen) as jumlah_dosen')
@@ -193,7 +203,8 @@ class ArsipSuratModel extends Model
             $categories[] = $year . '/' . ($year + 1) . ' <br> Genap';
         }
 
-        $categoriesMap = array_fill_keys($categories, 0);
+        // Inisialisasi maps untuk jumlah surat dan jumlah matkul
+        $categoriesMap = array_fill_keys($categories, ['jumlah_surat' => 0, 'jumlah_matkul' => 0]);
 
         $seriesData = [];
 
@@ -201,7 +212,7 @@ class ArsipSuratModel extends Model
             $perihal = $item['perihal'];
 
             if (!isset($seriesData[$perihal])) {
-                $seriesData[$perihal] = $categoriesMap;
+                $seriesData[$perihal] = $categoriesMap; // Inisialisasi grup baru untuk perihal
             }
 
             $periode = date('Y', strtotime($item['periode_awal'])) . '/' . (date('Y', strtotime($item['periode_awal'])) + 1);
@@ -209,7 +220,10 @@ class ArsipSuratModel extends Model
             $category = $periode . ' <br> ' . $semester;
 
             if (isset($seriesData[$perihal][$category])) {
-                $seriesData[$perihal][$category] += (int) $item['jumlah_surat'];
+                // Tambahkan jumlah surat
+                $seriesData[$perihal][$category]['jumlah_surat'] += (int) $item['jumlah_surat'];
+                // Tambahkan jumlah matkul (asumsikan ada field 'jumlah_matkul' dalam item)
+                $seriesData[$perihal][$category]['jumlah_matkul'] += (int) $item['jumlah_matkul']; // Pastikan item memiliki field ini
             }
         }
 
@@ -217,14 +231,16 @@ class ArsipSuratModel extends Model
         foreach ($seriesData as $perihal => $data) {
             $series[] = [
                 'name' => $perihal,
-                'data' => array_values($data)
+                'data_jumlah_surat' => array_column($data, 'jumlah_surat'), // Ambil data jumlah surat
+                'data_jumlah_matkul' => array_column($data, 'jumlah_matkul')  // Ambil data jumlah matkul
             ];
         }
 
         if (empty($series)) {
             $series[] = [
                 'name' => 'No Data',
-                'data' => array_fill(0, count($categories), 0)
+                'data_jumlah_surat' => array_fill(0, count($categories), 0),
+                'data_jumlah_matkul' => array_fill(0, count($categories), 0)
             ];
         }
 
@@ -233,6 +249,7 @@ class ArsipSuratModel extends Model
             'categories' => $categories
         ];
     }
+
     public function getYearFilter()
     {
         // Mengambil tahun terkecil dari periode_awal dan tahun terbesar dari periode_akhir

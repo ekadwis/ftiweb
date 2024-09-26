@@ -587,6 +587,19 @@ foreach ($beban_group as $item) {
 
 
     function renderChart(data) {
+        let seriesData;
+        if ('<?= $detail_page; ?>' === 'Pengajaran') {
+            seriesData = data.series.map(serie => ({
+                name: serie.name,
+                data: serie.data_jumlah_matkul
+            }));
+        } else {
+            seriesData = data.series.map(serie => ({
+                name: serie.name,
+                data: serie.data_jumlah_surat
+            }));
+        }
+
         Highcharts.chart('line-container', {
             title: {
                 text: 'Jenis <?= $detail_page; ?> Berdasarkan Periode',
@@ -636,7 +649,7 @@ foreach ($beban_group as $item) {
                 }
             },
 
-            series: data.series,
+            series: seriesData,
 
             responsive: {
                 rules: [{
@@ -652,7 +665,6 @@ foreach ($beban_group as $item) {
                     }
                 }]
             }
-
         });
     }
 </script>
