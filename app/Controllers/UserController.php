@@ -39,19 +39,20 @@ class UserController extends BaseController
 
     public function pengajuansurat_keputusan()
     {
-        $data['dosen'] = $this->DosenModel->findAll();
+        $data['dosen'] = $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll();
         return view('user/pengajuansurat_keputusan', $data);
     }
 
     public function pengajuansurat_tugas()
     {
-        $data['dosen'] = $this->DosenModel->findAll();
+        $data['dosen'] = $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll();
+
         return view('user/pengajuansurat_tugas', $data);
     }
 
     public function pengajuansurat_formal()
     {
-        $data['dosen'] = $this->DosenModel->findAll();
+        $data['dosen'] = $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll();
         return view('user/pengajuansurat_formal', $data);
     }
 

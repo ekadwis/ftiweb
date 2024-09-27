@@ -41,7 +41,7 @@
         <div id="dosenContainer">
             <!-- Tempat untuk menambahkan dosen baru -->
         </div>
-
+        <div class="my-5"></div>
         <!-- Tambahan field untuk jenis publikasi dan keputusan -->
         <div id="jenisPublikasiContainer" class="form-group mt-3" style="display: none;">
             <label>Jenis Publikasi</label>
@@ -96,77 +96,92 @@
     </form>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const perihalSelect = document.getElementById("perihalSelect");
-            const jenisPublikasiContainer = document.getElementById("jenisPublikasiContainer");
-            const keputusanContainer = document.getElementById("keputusanContainer");
-            const tambahDosenButton = document.getElementById("tambahDosen");
+    document.addEventListener("DOMContentLoaded", function() {
+        const perihalSelect = document.getElementById("perihalSelect");
+        const jenisPublikasiContainer = document.getElementById("jenisPublikasiContainer");
+        const keputusanContainer = document.getElementById("keputusanContainer");
+        const tambahDosenButton = document.getElementById("tambahDosen");
 
-            // Event listener untuk dropdown Perihal
-            perihalSelect.addEventListener("change", function() {
-                const selectedValue = perihalSelect.value;
+        // Event listener untuk dropdown Perihal
+        perihalSelect.addEventListener("change", function() {
+            const selectedValue = perihalSelect.value;
 
-                // Jika perihal Pengabdian atau Penelitian, tampilkan jenis publikasi dan keputusan
-                if (selectedValue.includes("Pengabdian") || selectedValue.includes("Penelitian")) {
-                    jenisPublikasiContainer.style.display = "block";
-                    keputusanContainer.style.display = "block";
-                } 
-                // Jika perihal Pengajaran, hanya tampilkan keputusan
-                else if (selectedValue === "Pengajaran") {
-                    jenisPublikasiContainer.style.display = "none";
-                    keputusanContainer.style.display = "block";
-                } 
-                // Jika perihal lain, sembunyikan semuanya
-                else {
-                    jenisPublikasiContainer.style.display = "none";
-                    keputusanContainer.style.display = "none";
-                }
-            });
-
-            // Memicu event change di awal agar tombol sesuai dengan nilai default
-            perihalSelect.dispatchEvent(new Event('change'));
+            // Jika perihal Pengabdian atau Penelitian, tampilkan jenis publikasi dan keputusan
+            if (selectedValue.includes("Pengabdian") || selectedValue.includes("Penelitian")) {
+                jenisPublikasiContainer.style.display = "block";
+                keputusanContainer.style.display = "block";
+            } 
+            // Jika perihal Pengajaran atau Penunjang, hanya tampilkan keputusan
+            else if (selectedValue === "Pengajaran" || selectedValue === "Penunjang") {
+                jenisPublikasiContainer.style.display = "none";
+                keputusanContainer.style.display = "block";
+            } 
+            // Jika perihal lain, sembunyikan semuanya
+            else {
+                jenisPublikasiContainer.style.display = "none";
+                keputusanContainer.style.display = "none";
+            }
         });
 
-        // Data dosen dari server ke JavaScript
-        const dosenData = <?= json_encode($dosen); ?>;
+        // Memicu event change di awal agar tombol sesuai dengan nilai default
+        perihalSelect.dispatchEvent(new Event('change'));
+    });
 
-        document.addEventListener("DOMContentLoaded", function() {
-            let dosenCount = 0;
+    // Data dosen dari server ke JavaScript
+    const dosenData = <?= json_encode($dosen); ?>;
 
-            document.getElementById('tambahDosen').addEventListener('click', function(e) {
-                e.preventDefault();
-                dosenCount++;
+    document.addEventListener("DOMContentLoaded", function() {
+        let dosenCount = 0;
 
-                let optionsHtml = dosenData.map(d =>
-                    `<option value="${d.id_dosen}">${d.nama_dosen}</option>`
-                ).join('');
+        document.getElementById('tambahDosen').addEventListener('click', function(e) {
+            e.preventDefault();
+            dosenCount++;
 
-                let dosenHtml = `
-                <div class="form-group mt-3" id="dosenGroup${dosenCount}">
-                    <div class="d-flex justify-content-between">
-                        <label>Dosen ${dosenCount}</label>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="hapusDosen(${dosenCount})">Hapus</button>
-                    </div>
-                    <select class="form-control form-control-sm" name="dosen${dosenCount}">
-                        <option value="">Pilih Dosen</option>
-                        ${optionsHtml}
-                    </select>
-                </div>
+            let optionsHtml = dosenData.map(d =>
+                `<option value="${d.id_dosen}">${d.nama_dosen}</option>`
+            ).join('');
+
+            let selectedPerihal = document.getElementById("perihalSelect").value;
+
+            // Set nilai dan tipe input jumlah_matkul
+            let jumlahMatkulHtml = '';
+            if (selectedPerihal.includes("Pengabdian") || selectedPerihal.includes("Penelitian") || selectedPerihal.includes("Penunjang")) {
+                jumlahMatkulHtml = `
+                <input type="hidden" name="jumlah_matkul${dosenCount}" value="1">
+                `;
+            } else {
+                jumlahMatkulHtml = `
                 <div class="form-group mt-3">
-                    <label>Jumlah Matkul ${dosenCount}</label>
-                    <input class="form-control" type="text" name="jumlah_matkul${dosenCount}" required>
+                <label>Jumlah Matkul ${dosenCount}</label>
+                <input class="form-control" type="text" name="jumlah_matkul${dosenCount}" required>
                 </div>
+                `;
+            }
+
+            let dosenHtml = `
+            <div class="form-group mt-3" id="dosenGroup${dosenCount}">
+                <div class="d-flex justify-content-between">
+                    <label>Dosen ${dosenCount}</label>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="hapusDosen(${dosenCount})">Hapus</button>
+                </div>
+                <select class="form-control form-control-sm" name="dosen${dosenCount}">
+                    <option value="">Pilih Dosen</option>
+                    ${optionsHtml}
+                </select>
+                ${jumlahMatkulHtml}
+            </div>
             `;
 
-                document.getElementById('dosenContainer').insertAdjacentHTML('beforeend', dosenHtml);
-            });
+            document.getElementById('dosenContainer').insertAdjacentHTML('beforeend', dosenHtml);
         });
+    });
 
-        function hapusDosen(dosenId) {
-            let dosenGroup = document.getElementById(`dosenGroup${dosenId}`);
-            dosenGroup.remove();
-        }
-    </script>
+    function hapusDosen(dosenId) {
+        let dosenGroup = document.getElementById(`dosenGroup${dosenId}`);
+        dosenGroup.remove();
+    }
+</script>
+
 
 </div>
 

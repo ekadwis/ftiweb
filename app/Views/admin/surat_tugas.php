@@ -32,7 +32,21 @@
         <div id="dosenContainer">
             <!-- Tempat untuk menambahkan dosen baru -->
         </div>
-
+        <div class="my-5"></div>
+        <!-- Tambahkan kontainer untuk Jenis Publikasi -->
+        <div id="jenisPublikasiContainer" class="form-group mt-3" style="display: none;">
+            <label>Jenis Publikasi</label>
+            <select class="form-control form-control-sm" name="jenis_publikasi">
+                <option value="">Pilih Jenis Publikasi</option>
+                <option value="Jurnal">Jurnal</option>
+                <option value="Prosiding">Prosiding</option>
+                <option value="HKI">HKI</option>
+                <option value="Paten">Paten</option>
+                <option value="Buku Ajar">Buku Ajar</option>
+                <option value="Buku Chapter">Buku Chapter</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+        </div>
 
         <div id="keputusanContainer" class="form-group mt-3">
             <label>Keputusan</label>
@@ -65,6 +79,19 @@
         document.addEventListener("DOMContentLoaded", function() {
             let dosenCount = 0;
 
+            // Menangani perubahan pada select perihal
+            document.querySelector('select[name="perihal"]').addEventListener('change', function() {
+                let perihal = this.value.toLowerCase();
+                const jenisPublikasiContainer = document.getElementById('jenisPublikasiContainer');
+
+                if (perihal.includes("penunjang") || perihal.includes("penelitian")) {
+                    jenisPublikasiContainer.style.display = 'block'; // Tampilkan kontainer
+                } else {
+                    jenisPublikasiContainer.style.display = 'none'; // Sembunyikan kontainer
+                }
+            });
+
+            // Saat tombol tambah dosen diklik
             document.getElementById('tambahDosen').addEventListener('click', function(e) {
                 e.preventDefault();
                 dosenCount++;
@@ -84,21 +111,38 @@
                         ${optionsHtml}
                     </select>
                 </div>
-                <div class="form-group mt-3">
-                    <label>Jumlah Matkul ${dosenCount}</label>
-                    <input class="form-control" type="text" name="jumlah_matkul${dosenCount}" required>
-                </div>
-            `;
+                `;
+
+                let perihal = document.querySelector('select[name="perihal"]').value.toLowerCase();
+
+                if (perihal.includes("pengabdian") || perihal.includes("penelitian") || perihal.includes("penunjang")) {
+                    // Jika perihal mengandung kata pengabdian, penelitian, atau penunjang, input type hidden
+                    dosenHtml += `
+                        <input type="hidden" name="jumlah_matkul${dosenCount}" value="1" id="matkulGroup${dosenCount}">
+                    `;
+                } else {
+                    // Jika tidak, tampilkan input jumlah matkul biasa
+                    dosenHtml += `
+                    <div class="form-group mt-3" id="matkulGroup${dosenCount}">
+                        <label>Jumlah Matkul ${dosenCount}</label>
+                        <input class="form-control" type="text" name="jumlah_matkul${dosenCount}" required>
+                    </div>
+                    `;
+                }
 
                 document.getElementById('dosenContainer').insertAdjacentHTML('beforeend', dosenHtml);
             });
         });
 
+        // Fungsi untuk menghapus dosen yang ditambahkan
         function hapusDosen(dosenId) {
             let dosenGroup = document.getElementById(`dosenGroup${dosenId}`);
+            let matkulGroup = document.getElementById(`matkulGroup${dosenId}`);
             dosenGroup.remove();
+            if (matkulGroup) matkulGroup.remove();
         }
     </script>
+
 </div>
 
 <?= $this->endSection(); ?>

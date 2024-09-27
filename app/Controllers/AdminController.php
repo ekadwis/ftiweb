@@ -130,7 +130,6 @@ class AdminController extends BaseController
 
     public function suratkeputusan()
     {
-
         $data['dosen'] = $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll();
         return view('admin/surat_keputusan', $data);
     }
@@ -266,7 +265,7 @@ class AdminController extends BaseController
                 'jenis_surat' => $data['jenis_surat'],
                 'jenis_publikasi' => $data['jenis_publikasi'],
                 'keputusan' => $data['keputusan'],
-                'jumlah_matkul' => 0,
+                'jumlah_matkul' => 1,
                 'prodi' => $data['prodi'],
                 'nama_dosen' => $data['nama_dosen'],
                 'nik_dosen' => $data['nik_dosen'],

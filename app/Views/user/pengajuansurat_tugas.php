@@ -37,7 +37,7 @@
         <div id="dosenContainer">
             <!-- Tempat untuk menambahkan dosen baru -->
         </div>
-
+        <div class="my-5"></div>
         <!-- Tambahan field untuk jenis publikasi dan tugas -->
         <div id="jenisPublikasiContainer" class="form-group mt-3" style="display: none;">
             <label>Jenis Publikasi</label>
@@ -103,6 +103,9 @@
 
                 if (selectedValue.includes("Pengabdian") || selectedValue.includes("Penelitian")) {
                     jenisPublikasiContainer.style.display = "block";
+                    keputusanContainer.style.display = "block";
+                } else if (selectedValue === "Penunjang")  {
+                    jenisPublikasiContainer.style.display = "none";
                     keputusanContainer.style.display = "block";
                 } else {
                     jenisPublikasiContainer.style.display = "none";
