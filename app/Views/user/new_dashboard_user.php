@@ -203,6 +203,32 @@
         const data = responseData.data; // Ambil data surat dari respons
         const groupedSurat = [];
 
+        // Inisialisasi setiap perihal dengan 0 jumlah_surat dan jumlah_dosen
+        const initialGroups = [{
+                perihal: 'Penelitian',
+                jumlah_surat: 0,
+                dosen: new Set()
+            },
+            {
+                perihal: 'Pengabdian',
+                jumlah_surat: 0,
+                dosen: new Set()
+            },
+            {
+                perihal: 'Pengajaran',
+                jumlah_surat: 0,
+                dosen: new Set()
+            },
+            {
+                perihal: 'Penunjang',
+                jumlah_surat: 0,
+                dosen: new Set()
+            },
+        ];
+
+        // Mengisi groupedSurat dengan inisialisasi awal
+        initialGroups.forEach(group => groupedSurat.push(group));
+
         // Mengelompokkan data berdasarkan perihal
         data.forEach(item => {
             let key;
@@ -215,20 +241,11 @@
                 key = 'Pengajaran';
             } else if (item.perihal.includes('Penunjang')) {
                 key = 'Penunjang';
-            } else {
-                key = 'Lainnya';
             }
 
             let found = groupedSurat.find(group => group.perihal === key);
 
-            if (!found) {
-                // Jika grup belum ada, tambahkan grup baru
-                groupedSurat.push({
-                    perihal: key,
-                    jumlah_surat: 1, // Inisialisasi jumlah_surat dengan 1
-                    dosen: new Set([item.nama_dosen]) // Mulai Set dengan nama dosen pertama
-                });
-            } else {
+            if (found) {
                 // Jika grup sudah ada, tambah jumlah_surat
                 found.jumlah_surat += 1; // Tambah jumlah surat
                 // Tambahkan nama dosen ke dalam Set (untuk menghindari duplikasi)
@@ -245,54 +262,47 @@
         const container = document.querySelector('.card-surat');
         container.innerHTML = ""; // Kosongkan kontainer
 
-        if (groupedSurat.length > 0) {
-            groupedSurat.forEach(data => {
-                const card = document.createElement('div');
-                card.className = 'col border p-3 rounded';
+        groupedSurat.forEach(data => {
+            const card = document.createElement('div');
+            card.className = 'col border p-3 rounded';
 
-                const cardBody = document.createElement('div');
-                cardBody.className = 'card-body d-flex flex-column justify-content-between';
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body d-flex flex-column justify-content-between';
 
-                const headerDiv = document.createElement('div');
-                headerDiv.className = 'd-flex justify-content-between align-items-start';
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'd-flex justify-content-between align-items-start';
 
-                const title = document.createElement('div');
-                title.className = 'fs-5';
-                title.textContent = data.perihal;
+            const title = document.createElement('div');
+            title.className = 'fs-5';
+            title.textContent = data.perihal;
 
-                const detailButton = document.createElement('a');
-                detailButton.href = `/user/detail?section=${data.perihal}&prodi=${selectedProdi}`;
-                detailButton.className = 'btn btn-dark btn-sm';
-                detailButton.textContent = 'Detail';
+            const detailButton = document.createElement('a');
+            detailButton.href = `/user/detail?section=${data.perihal}&prodi=${selectedProdi}`;
+            detailButton.className = 'btn btn-dark btn-sm';
+            detailButton.textContent = 'Detail';
 
-                const textCenterDiv = document.createElement('div');
-                textCenterDiv.className = 'text-center';
+            const textCenterDiv = document.createElement('div');
+            textCenterDiv.className = 'text-center';
 
-                const jumlahSurat = document.createElement('p');
-                jumlahSurat.className = 'card-text fs-3 fw-bold';
-                jumlahSurat.textContent = data.jumlah_surat; // Menggunakan jumlah_surat dari grup
+            const jumlahSurat = document.createElement('p');
+            jumlahSurat.className = 'card-text fs-3 fw-bold';
+            jumlahSurat.textContent = data.jumlah_surat; // Menggunakan jumlah_surat dari grup
 
-                const jumlahDosen = document.createElement('p');
-                jumlahDosen.className = 'card-text fw-normal fs-5';
-                jumlahDosen.textContent = `${data.jumlah_dosen} Dosen`; // Menggunakan jumlah_dosen dari grup
+            const jumlahDosen = document.createElement('p');
+            jumlahDosen.className = 'card-text fw-normal fs-5';
+            jumlahDosen.textContent = `${data.jumlah_dosen} Dosen`; // Menggunakan jumlah_dosen dari grup
 
-                // Menambahkan elemen ke dalam struktur kartu
-                headerDiv.appendChild(title);
-                headerDiv.appendChild(detailButton);
-                cardBody.appendChild(headerDiv);
-                textCenterDiv.appendChild(jumlahSurat);
-                textCenterDiv.appendChild(jumlahDosen);
-                cardBody.appendChild(textCenterDiv);
-                card.appendChild(cardBody);
+            // Menambahkan elemen ke dalam struktur kartu
+            headerDiv.appendChild(title);
+            headerDiv.appendChild(detailButton);
+            cardBody.appendChild(headerDiv);
+            textCenterDiv.appendChild(jumlahSurat);
+            textCenterDiv.appendChild(jumlahDosen);
+            cardBody.appendChild(textCenterDiv);
+            card.appendChild(cardBody);
 
-                container.appendChild(card);
-            });
-        } else {
-            const emptyMessage = document.createElement('div');
-            emptyMessage.className = 'text-center col-12 py-4';
-            emptyMessage.textContent = 'Data Tidak ada';
-            container.appendChild(emptyMessage);
-        }
+            container.appendChild(card);
+        });
     }
 
 
