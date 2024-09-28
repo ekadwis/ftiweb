@@ -84,7 +84,7 @@
                 let perihal = this.value.toLowerCase();
                 const jenisPublikasiContainer = document.getElementById('jenisPublikasiContainer');
 
-                if (perihal.includes("penunjang") || perihal.includes("penelitian")) {
+                if (perihal.includes("pengabdian") || perihal.includes("penelitian")) {
                     jenisPublikasiContainer.style.display = 'block'; // Tampilkan kontainer
                 } else {
                     jenisPublikasiContainer.style.display = 'none'; // Sembunyikan kontainer

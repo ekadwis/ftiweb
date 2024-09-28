@@ -32,6 +32,7 @@
             <?php endif; ?>
             <input type="hidden" value="<?= $i++; ?>">
         <?php endforeach; ?>
+        <div class="my-5"></div>
         <?php if ($result['jenis_publikasi'] != "") : ?>
             <div class="form-group mt-3">
                 <label>Jenis Publikasi</label>
@@ -61,7 +62,7 @@
         </div>
         <div class="form-group my-3">
             <label for="exampleFormControlTextarea2">Catatan</label>
-            <textarea class="form-control" id="exampleFormControlTextarea2" rows="3" value="<?= $result['catatan']; ?>" disabled><?= $result['tembusan']; ?></textarea>
+            <textarea class="form-control" id="exampleFormControlTextarea2" rows="3" value="<?= $result['catatan']; ?>" disabled><?= $result['catatan']; ?></textarea>
         </div>
         <a href="<?= base_url(); ?>admin/pengajuansurat" class="btn btn-secondary">Kembali</a>
     </form>

@@ -48,7 +48,7 @@
                 </div>
                 <div class="col">
                     <label>Tahun</label>
-                    <input type="number" class="form-control form-control-sm" name="tahun">
+                    <input type="number" class="form-control form-control-sm" name="tahun" required>
                 </div>
             </div>
         </div>
@@ -85,6 +85,7 @@
                 <!-- Tempat untuk menambahkan dosen baru -->
             </div>
         <?php endif; ?>
+        <div class="my-5"></div>
         <div class="form-group mt-3">
             <label>Keputusan</label>
             <input class="form-control" type="text" value="<?= $result['keputusan']; ?>" disabled>
@@ -138,7 +139,7 @@
                         <option value="">Pilih Dosen</option>
                         ${optionsHtml}
                     </select>
-                    <div class="mt-2">
+                    <div class="mt-2" id="matkulGroup${dosenCount}">
                         <label>Jumlah Matkul</label>
                         <input type="number" class="form-control form-control-sm" name="jumlah_matkul${dosenCount}" required>
                     </div>
@@ -151,7 +152,9 @@
 
     function hapusDosen(dosenId) {
         let dosenGroup = document.getElementById(`dosenGroup${dosenId}`);
+        let matkulGroup = document.getElementById(`matkulGroup${dosenId}`);
         dosenGroup.remove();
+        matkulGroup.remove();
     }
 </script>
 
