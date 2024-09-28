@@ -302,7 +302,7 @@ class AdminController extends BaseController
             'result' => $this->PermohonanTtdModel->find($id_permohonan),
             'listDosen' => $dosenData,
             'kodeSurat' => $this->KodeSuratModel->findAll(),
-            'dosens' => $this->DosenModel->findAll(),
+            'dosens' => $this->DosenModel->orderBy('nama_dosen', 'ASC')->findAll(),
         ];
 
         return view('admin/detail_permohonan_ttd', $data);
