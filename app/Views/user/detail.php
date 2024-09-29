@@ -347,10 +347,14 @@ foreach ($beban_group as $item) {
 
             // Setelah selectedDosen diperbarui, lakukan fetch ke API lain
             fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-                bebanKerjaChart(data);
+                if (`<?= $detail_page ?>` == "Pengabdian" || `<?= $detail_page ?>` == "Penelitian") {
+                    bebanKerjaChart(data)
+                }
             });
             fetchPublikasiApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-                publikasiChart(data)
+                if (`<?= $detail_page ?>` == "Pengabdian" || `<?= $detail_page ?>` == "Penelitian") {
+                    publikasiChart(data)
+                }
             });
 
             fetchKegiatan(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
@@ -366,10 +370,14 @@ foreach ($beban_group as $item) {
         selectedDosen = event.target.value;
 
         fecthApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-            bebanKerjaChart(data)
+            if (`<?= $detail_page ?>` == "Pengabdian" || `<?= $detail_page ?>` == "Penelitian") {
+                bebanKerjaChart(data)
+            }
         });
         fetchPublikasiApi(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
-            publikasiChart(data)
+            if (`<?= $detail_page ?>` == "Pengabdian" || `<?= $detail_page ?>` == "Penelitian") {
+                publikasiChart(data)
+            }
         });
 
         fetchKegiatan(`${startYear}-01-01`, `${currentYear}-12-31`, selectedProdi, selectedDosen).then(data => {
