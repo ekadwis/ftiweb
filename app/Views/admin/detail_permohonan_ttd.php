@@ -63,7 +63,7 @@
                         <div class="row">
                             <div class="col">
                                 <label>Nik Dosen <?= $i; ?></label>
-                                <input type="number" class="form-control" value="<?= $dosen['nik_dosen']; ?>" disabled>
+                                <input type="text" class="form-control" value="<?= $dosen['nik_dosen']; ?>" disabled>
                             </div>
                             <div class="col">
                                 <label>Prodi Dosen <?= $i; ?></label>

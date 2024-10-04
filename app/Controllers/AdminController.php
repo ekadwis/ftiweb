@@ -611,7 +611,7 @@ class AdminController extends BaseController
         // cek dosen
         $cekdosen = $this->request->getVar('dosen1');
         if (empty($cekdosen)) {
-            return redirect()->to('admin/suratkeputusan')->with('msg-failed', 'Dosen belum terisi');
+            return redirect()->to('admin/surattugas')->with('msg-failed', 'Dosen belum terisi');
         }
 
         if ($file->isValid() && !$file->hasMoved()) {
