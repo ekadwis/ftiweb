@@ -1,7 +1,3 @@
-Berikut adalah contoh deskripsi yang bisa Anda gunakan untuk README GitHub project Anda:
-
----
-
 # FTIWEB
 
 FTIWEB adalah sistem berbasis web yang dibuat untuk menangani pengajuan surat dari siswa ke dekanat. Proyek ini cukup kompleks, karena membutuhkan waktu sekitar 1-2 bulan untuk diselesaikan. Sistem ini dirancang untuk menangani berbagai tahap dalam pengajuan surat, termasuk persetujuan, revisi, penolakan, hingga arsip akhir.
