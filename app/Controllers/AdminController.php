@@ -366,7 +366,6 @@ class AdminController extends BaseController
 
                         // Update no_urut di table kode_surat
                         $this->KodeSuratModel->update_no_urut($kode_surat, $new_no_urut);
-
                         // Insert pengajuan ke table surat
                         $this->PermohonanTtdModel->insert($data);
                     } else {
@@ -442,6 +441,10 @@ class AdminController extends BaseController
 
         foreach ($result as $data) {
             // Sesuaikan dengan struktur tabel permohonan_ttd
+            if (empty($data['jumlah_matkul']) || $data['jumlah_matkul'] == 0) {
+                $data['jumlah_matkul'] = 1;
+            }
+            
             $this->ArsipSuratModel->insert([
                 'id_permohonan' => $data['id_permohonan'],
                 'id_surat' => $data['id_surat'],
@@ -490,24 +493,24 @@ class AdminController extends BaseController
         }
 
 
-        if ($file->isValid() && !$file->hasMoved()) {
-            // Generate random 32 characters filename
-            $newFileName = bin2hex(random_bytes(16)) . '.' . $file->getExtension();
+        // if ($file->isValid() && !$file->hasMoved()) {
+        //     // Generate random 32 characters filename
+        //     $newFileName = bin2hex(random_bytes(16)) . '.' . $file->getExtension();
 
-            // Define the path to save the file
-            $path = WRITEPATH . 'uploads/lampiran_files/';
+        //     // Define the path to save the file
+        //     $path = WRITEPATH . 'uploads/lampiran_files/';
 
-            // Make sure directory exists
-            if (!is_dir($path)) {
-                mkdir($path, 0777, true);
-            }
+        //     // Make sure directory exists
+        //     if (!is_dir($path)) {
+        //         mkdir($path, 0777, true);
+        //     }
 
-            // Move the file to the new location
-            $file->move($path, $newFileName);
+        //     // Move the file to the new location
+        //     $file->move($path, $newFileName);
 
-            // Get the file name only (without path)
-            $lampiran_path = $newFileName;
-        }
+        //     // Get the file name only (without path)
+        //     $lampiran_path = $newFileName;
+        // }
 
         for ($i = 1; $i <= 10; $i++) {
             $id_dosen = $this->request->getVar('dosen' . $i);
@@ -554,43 +557,46 @@ class AdminController extends BaseController
     
                     // Insert pengajuan ke table arsip
                     $this->ArsipSuratModel->insert($data);
-                    return redirect()->to('admin/arsipsurat')->with('msg-success', 'Berhasil menginput surat keputusan baru.');
+                } else {
+                    continue;
+                }
+            } else { 
+                if ($nik_dosen && $nama_dosen && $prodi_dosen) {
+                    $data = [
+                        'id_permohonan' => 0,
+                        'id_surat' => 0,
+                        'id_dekanat' => user()->id,
+                        'id_dosen' => $id_dosen,
+                        'tanggal' => date('d-m-Y'),
+                        'kode_surat' => $this->request->getVar('kode_surat'),
+                        'perihal' => $perihal,
+                        'jenis_publikasi' => $this->request->getVar('jenis_publikasi'),
+                        'keputusan' => $this->request->getVar('keputusan'),
+                        'jenis_surat' => 'Surat Keputusan',
+                        'prodi' => $prodi_dosen[0],
+                        'nama_dosen' => $nama_dosen[0],
+                        'nik_dosen' => $nik_dosen[0],
+                        'periode_awal' => $this->request->getVar('periode_awal'),
+                        'periode_akhir' => $this->request->getVar('periode_akhir'),
+                        'sifat' => "Urgent",
+                        'jumlah_matkul' => $jumlah_matkul,
+                        'tembusan' => "",
+                        'catatan' => "",
+                        'lampiran' => $lampiran_path,
+                        'no_urut' => 0,
+                        'status' => "Download",
+                        'author' => user()->nama_user,
+                        'revisi' => "",
+                    ];
+    
+                    // Insert pengajuan ke table arsip
+                    $this->ArsipSuratModel->insert($data);
+                } else {
+                    continue;
                 }
             }
 
-            if ($nik_dosen && $nama_dosen && $prodi_dosen) {
-                $data = [
-                    'id_permohonan' => 0,
-                    'id_surat' => 0,
-                    'id_dekanat' => user()->id,
-                    'id_dosen' => $id_dosen,
-                    'tanggal' => date('d-m-Y'),
-                    'kode_surat' => $this->request->getVar('kode_surat'),
-                    'perihal' => $perihal,
-                    'jenis_publikasi' => $this->request->getVar('jenis_publikasi'),
-                    'keputusan' => $this->request->getVar('keputusan'),
-                    'jenis_surat' => 'Surat Keputusan',
-                    'prodi' => $prodi_dosen[0],
-                    'nama_dosen' => $nama_dosen[0],
-                    'nik_dosen' => $nik_dosen[0],
-                    'periode_awal' => $this->request->getVar('periode_awal'),
-                    'periode_akhir' => $this->request->getVar('periode_akhir'),
-                    'sifat' => "Urgent",
-                    'jumlah_matkul' => $jumlah_matkul,
-                    'tembusan' => "",
-                    'catatan' => "",
-                    'lampiran' => $lampiran_path,
-                    'no_urut' => 0,
-                    'status' => "Download",
-                    'author' => user()->nama_user,
-                    'revisi' => "",
-                ];
-
-                // Insert pengajuan ke table arsip
-                $this->ArsipSuratModel->insert($data);
-            } else {
-                continue;
-            }
+           
         }
 
         return redirect()->to('admin/arsipsurat')->with('msg-success', 'Berhasil menginput surat keputusan baru.');
@@ -614,7 +620,7 @@ class AdminController extends BaseController
             return redirect()->to('admin/surattugas')->with('msg-failed', 'Dosen belum terisi');
         }
 
-        if ($file->isValid() && !$file->hasMoved()) {
+        /*if ($file->isValid() && !$file->hasMoved()) {
             // Generate random 32 characters filename
             $newFileName = bin2hex(random_bytes(16)) . '.' . $file->getExtension();
 
@@ -631,7 +637,7 @@ class AdminController extends BaseController
 
             // Get the file name only (without path)
             $lampiran_path = $newFileName;
-        }
+        }*/
 
         for ($i = 1; $i <= 10; $i++) {
             $id_dosen = $this->request->getVar('dosen' . $i);

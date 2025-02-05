@@ -13,8 +13,7 @@
         <div class="form-group mt-3">
             <label>Perihal</label>
             <select class="form-control form-control-sm" name="perihal" required>
-                <option value="Pengajaran">Pengajaran</option>
-                <option value="Pengabdian">Pengabdian</option>
+                <option value="">Pilih Perihal</option>
                 <option value="Pengabdian (Publikasi) Tingkat Internal">Pengabdian (Publikasi) Tingkat Internal</option>
                 <option value="Pengabdian (Publikasi) Tingkat Lokal">Pengabdian (Publikasi) Tingkat Lokal</option>
                 <option value="Pengabdian (Publikasi) Tingkat Nasional">Pengabdian (Publikasi) Tingkat Nasional</option>
@@ -63,10 +62,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group mt-3">
-            <label for="exampleFormControlFile1">Unggah Lampiran</label><br>
-            <input type="file" class="form-control-file" id="exampleFormControlFile1" name="lampiran" required>
-        </div>
+       
         <button type="submit" class="btn btn-primary mt-4">Simpan</button>
     </form>
 

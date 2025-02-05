@@ -265,7 +265,7 @@ class SuratController extends BaseController
         $file = $this->request->getFile('lampiran');
         $lampiran_path = null;
 
-        if ($file->isValid() && !$file->hasMoved()) {
+        /*if ($file->isValid() && !$file->hasMoved()) {
             // Generate random 32 characters filename
             $newFileName = bin2hex(random_bytes(16)) . '.' . $file->getExtension();
 
@@ -282,7 +282,7 @@ class SuratController extends BaseController
 
             // Get the file name only (without path)
             $lampiran_path = $newFileName;
-        }
+        }*/
 
         $id_dosen = $this->request->getVar('dosen');
 

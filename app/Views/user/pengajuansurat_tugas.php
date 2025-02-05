@@ -16,8 +16,7 @@
         <div class="form-group mt-3">
             <label>Perihal</label>
             <select class="form-control form-control-sm" id="perihalSelect" name="perihal" required>
-                <option value="Pengajaran" selected>Pengajaran</option>
-                <option value="Pengabdian">Pengabdian</option>
+                <option value="" >Pilih Perihal</option>
                 <option value="Pengabdian (Publikasi) Tingkat Internal">Pengabdian (Publikasi) Tingkat Internal</option>
                 <option value="Pengabdian (Publikasi) Tingkat Lokal">Pengabdian (Publikasi) Tingkat Lokal</option>
                 <option value="Pengabdian (Publikasi) Tingkat Nasional">Pengabdian (Publikasi) Tingkat Nasional</option>
@@ -32,7 +31,7 @@
 
         <!-- Field lainnya yang sudah ada -->
         <div class="form-group mt-3">
-            <a href="#" id="tambahDosen" class="btn btn-success"><box-icon name='plus' color='#ffffff'></box-icon> Tambah Dosen</a>
+            <a href="#" id="tambahDosen" class="btn btn-success"><box-icon name='plus' color='#ffffff'></box-icon> Tambah PA/PPA</a>
         </div>
         <div id="dosenContainer">
             <!-- Tempat untuk menambahkan dosen baru -->
@@ -131,11 +130,11 @@
                 let dosenHtml = `
                 <div class="form-group mt-3" id="dosenGroup${dosenCount}">
                     <div class="d-flex justify-content-between">
-                        <label>Dosen ${dosenCount}</label>
+                        <label>PA/PPA ${dosenCount}</label>
                         <button type="button" class="btn btn-danger btn-sm" onclick="hapusDosen(${dosenCount})">Hapus</button>
                     </div>
                     <select class="form-control form-control-sm" name="dosen${dosenCount}">
-                        <option value="">Pilih Dosen</option>
+                        <option value="">Pilih PA/PPA</option>
                         ${optionsHtml}
                     </select>
                 </div>

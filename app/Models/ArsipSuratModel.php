@@ -49,8 +49,9 @@ class ArsipSuratModel extends Model
         // Tentukan arah pengurutan berdasarkan parameter
         $order = ($type === 'most') ? 'DESC' : 'ASC';
 
-        // Query untuk mendapatkan data dosen dengan pengurutan surat sesuai parameter
-        $query = $this->select('dosen.nama_dosen, arsip_surat.jumlah_matkul, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat, arsip_surat.perihal')
+        // Query dasar
+        $builder = $this->db->table('arsip_surat')
+            ->select('dosen.nama_dosen, arsip_surat.jumlah_matkul, dosen.nik_dosen, COUNT(arsip_surat.id_arsip) as jumlah_surat, arsip_surat.perihal')
             ->join('dosen', 'arsip_surat.id_dosen = dosen.id_dosen')
             ->where('arsip_surat.periode_awal >=', $startDate)
             ->where('arsip_surat.periode_akhir <=', $endDate)
@@ -60,15 +61,15 @@ class ArsipSuratModel extends Model
             ->orderBy('arsip_surat.jumlah_matkul', $order)
             ->limit(5);
 
-        // Jika NIK user ada, tambahkan kondisi untuk mengecualikan data yang cocok
-        if ($nikUser) {
-            $query->where('dosen.nik_dosen !=', $nikUser);
+        // Tambahkan filter untuk NIK jika ada
+        if (!empty($nikUser)) {
+            $builder->where('dosen.nik_dosen !=', $nikUser);
         }
 
-        // Eksekusi query dan ambil hasilnya
-        $result = $query->findAll();
+        // Eksekusi query
+        $result = $builder->get()->getResultArray();
 
-        // Jika tidak ada hasil, ulangi query tanpa kondisi where
+        // Cek jika hasil kosong, beri default output
         if (empty($result)) {
             $result = array(
                 array(
@@ -77,7 +78,6 @@ class ArsipSuratModel extends Model
                 )
             );
         }
-
 
         return $result;
     }
@@ -89,7 +89,6 @@ class ArsipSuratModel extends Model
             ->like('arsip_surat.prodi', $prodi)
             ->findAll();
     }
-
 
     public function getPerihalDosen($startDate, $endDate, $prodi)
     {

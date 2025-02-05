@@ -54,7 +54,7 @@
                     <li class="sidebar-item">
                         <a href="<?= base_url(); ?>user/daftardosen" class="sidebar-link">
                             <i class="fa-solid fa-users"></i>
-                            Daftar Dosen
+                            Daftar PA/PPA
                         </a>
                     </li>
                     <li class="sidebar-item">
