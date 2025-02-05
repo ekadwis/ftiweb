@@ -46,8 +46,8 @@ Proyek ini saya kerjakan bersama teman saya, [@omsulthan](https://github.com/oms
 
 ## Kontributor
 
+- [@ekadwis](https://github.com/ekadwis)
 - [@omsulthan](https://github.com/omsulthan)
-- [@username](https://github.com/username)
 
 ## Lisensi
 
